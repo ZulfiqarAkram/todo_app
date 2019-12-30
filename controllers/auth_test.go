@@ -1,4 +1,4 @@
-package test
+package controllers
 
 import (
 	"bytes"
@@ -7,7 +7,6 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
-	ctrl "todo_app/controllers"
 )
 
 func TestLogin(t *testing.T) {
@@ -18,7 +17,7 @@ func TestLogin(t *testing.T) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ctrl.Login)
+	handler := http.HandlerFunc(Login)
 	handler.ServeHTTP(rr, req)
 
 	token := rr.Body.String()
@@ -35,7 +34,7 @@ func TestRegister(t *testing.T) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ctrl.Register)
+	handler := http.HandlerFunc(Register)
 	handler.ServeHTTP(rr, req)
 
 	expected := "New user has been registered."

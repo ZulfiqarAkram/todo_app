@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-	d "todo_app/data"
+	"todo_app/auth"
+	d "todo_app/db"
 	hf "todo_app/hp_func"
 	"todo_app/types"
 )
 
+//TODO shift to config
 const secretKey = "my_super_secret_key"
 const duration = 60 * time.Second
 
@@ -17,10 +19,13 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Inside Login func")
 	w.Header().Set("Content-Type", "application/json")
 	var user types.User
-	json.NewDecoder(r.Body).Decode(&user)
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		fmt.Println(err)
+	}
 	if hf.IsAuthenticUser(user.EmailAddress, user.Password) {
 		fmt.Println("duration: ", duration)
-		jwtManager := NewJWTWithConf(secretKey, duration)
+		jwtManager := auth.NewJWTWithConf(secretKey, duration)
 		userInDB := hf.GetUser(user.EmailAddress, user.Password)
 		payLoadData := map[string]interface{}{
 			"id":            userInDB.ID,
@@ -32,31 +37,49 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		json.NewEncoder(w).Encode(token)
+		err1 := json.NewEncoder(w).Encode(token)
+		if err1 != nil {
+			fmt.Println(err1)
+		}
 	} else {
-		json.NewEncoder(w).Encode("{'msg':'un authorized user.'}")
+		err := json.NewEncoder(w).Encode("{'msg':'un authorized user.'}")
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var newUser types.User
-	json.NewDecoder(r.Body).Decode(&newUser)
+	err := json.NewDecoder(r.Body).Decode(&newUser)
+	if err != nil {
+		fmt.Println(err)
+	}
 
 	if newUser.EmailAddress == "" || newUser.Username == "" || newUser.Password == "" {
-		json.NewEncoder(w).Encode("Please provide valid username/email_address/password.")
+		err := json.NewEncoder(w).Encode("Please provide valid username/email_address/password.")
+		if err != nil {
+			fmt.Println(err)
+		}
 	} else if hf.IsDuplicateUser(newUser.EmailAddress) {
-		json.NewEncoder(w).Encode("This email already exists in the system.")
+		err := json.NewEncoder(w).Encode("This email already exists in the system.")
+		if err != nil {
+			fmt.Println(err)
+		}
 	} else {
 		newUser.ID = len(d.UserDB) + 1
 		d.UserDB = append(d.UserDB, newUser)
 		fmt.Println("New user added: ", d.UserDB)
-		json.NewEncoder(w).Encode("New user has been registered.")
+		err := json.NewEncoder(w).Encode("New user has been registered.")
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
 func isValidToken(token string) (map[string]interface{}, error, bool) {
-	jwtManager := NewJWTWithConf(secretKey, duration)
+	jwtManager := auth.NewJWTWithConf(secretKey, duration)
 	payLoadResult, err := jwtManager.Decode(token)
 	if err != nil {
 		fmt.Println(err)

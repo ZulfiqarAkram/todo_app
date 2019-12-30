@@ -6,9 +6,9 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
-	d "todo_app/data"
-	"todo_app/types"
+	d "todo_app/db"
 	hf "todo_app/hp_func"
+	"todo_app/types"
 )
 
 func AddItem(w http.ResponseWriter, r *http.Request) {
@@ -18,14 +18,23 @@ func AddItem(w http.ResponseWriter, r *http.Request) {
 	if isValid {
 		usr := hf.ConvertMapToStruct(payload)
 		var newTodo types.TodoItem
-		json.NewDecoder(r.Body).Decode(&newTodo)
+		err := json.NewDecoder(r.Body).Decode(&newTodo)
+		if err != nil {
+			fmt.Println(err)
+		}
 		newTodo.ID = len(d.TodoDB) + 1
-		newTodo.UserID=usr.ID
+		newTodo.UserID = usr.ID
 		d.TodoDB = append(d.TodoDB, newTodo)
 		fmt.Println("AFTER ADDED : ", d.TodoDB)
-		json.NewEncoder(w).Encode(newTodo)
+		err1 := json.NewEncoder(w).Encode(newTodo)
+		if err1 != nil {
+			fmt.Println(err1)
+		}
 	} else {
-		json.NewEncoder(w).Encode(err)
+		err := json.NewEncoder(w).Encode(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
@@ -47,9 +56,15 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 		}
-		json.NewEncoder(w).Encode(d.TodoDB)
+		err := json.NewEncoder(w).Encode(d.TodoDB)
+		if err != nil {
+			fmt.Println(err)
+		}
 	} else {
-		json.NewEncoder(w).Encode(err)
+		err := json.NewEncoder(w).Encode(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 }
@@ -69,16 +84,25 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 			}
 			if item.ID == int(id) && item.UserID == usr.ID {
 				d.TodoDB = append(d.TodoDB[:index], d.TodoDB[index+1:]...)
-				json.NewDecoder(r.Body).Decode(&todoToBeUpdate)
+				err := json.NewDecoder(r.Body).Decode(&todoToBeUpdate)
+				if err != nil {
+					fmt.Println(err)
+				}
 				todoToBeUpdate.ID = int(id)
 				d.TodoDB = append(d.TodoDB, todoToBeUpdate)
 				fmt.Println("AFTER UPDATED : ", d.TodoDB)
 				break
 			}
 		}
-		json.NewEncoder(w).Encode(todoToBeUpdate)
+		err := json.NewEncoder(w).Encode(todoToBeUpdate)
+		if err != nil {
+			fmt.Println(err)
+		}
 	} else {
-		json.NewEncoder(w).Encode(err)
+		err := json.NewEncoder(w).Encode(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 
 }
@@ -87,11 +111,17 @@ func DisplayItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	token := r.Header.Get("token")
 	payload, err, isValid := isValidToken(token)
-	fmt.Println(payload," | ", err," | ", isValid)
+	fmt.Println(payload, " | ", err, " | ", isValid)
 	if isValid {
 		usr := hf.ConvertMapToStruct(payload)
-		json.NewEncoder(w).Encode(hf.GetUserTodoItems(usr.ID))
+		err := json.NewEncoder(w).Encode(hf.GetUserTodoItems(usr.ID))
+		if err != nil {
+			fmt.Println(err)
+		}
 	} else {
-		json.NewEncoder(w).Encode(err)
+		err := json.NewEncoder(w).Encode(err)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }

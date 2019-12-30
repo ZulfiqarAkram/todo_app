@@ -1,4 +1,4 @@
-package test
+package controllers
 
 import (
 	"bytes"
@@ -8,7 +8,6 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
-	ctrl "todo_app/controllers"
 )
 
 func TestDisplayItems(t *testing.T) {
@@ -17,7 +16,7 @@ func TestDisplayItems(t *testing.T) {
 		t.Fatal(err)
 	}
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ctrl.DisplayItems)
+	handler := http.HandlerFunc(DisplayItems)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -41,7 +40,7 @@ func TestAddItem(t *testing.T) {
 	}
 	req.Header.Set("Content-Type", "application/json")
 	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(ctrl.AddItem)
+	handler := http.HandlerFunc(AddItem)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -72,7 +71,7 @@ func TestUpdateItem(t *testing.T) {
 	}
 	req = mux.SetURLVars(req, vars)
 
-	handler := http.HandlerFunc(ctrl.UpdateItem)
+	handler := http.HandlerFunc(UpdateItem)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -103,7 +102,7 @@ func TestDeleteItem(t *testing.T) {
 	}
 	req = mux.SetURLVars(req, vars)
 
-	handler := http.HandlerFunc(ctrl.DeleteItem)
+	handler := http.HandlerFunc(DeleteItem)
 	handler.ServeHTTP(rr, req)
 
 	if status := rr.Code; status != http.StatusOK {
@@ -129,4 +128,3 @@ func JSONBytesEqual(a, b []byte) (bool, error) {
 	}
 	return reflect.DeepEqual(j2, j), nil
 }
-
