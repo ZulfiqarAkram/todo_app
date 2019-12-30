@@ -7,7 +7,7 @@ import (
 	"time"
 	"todo_app/auth"
 	d "todo_app/db"
-	hf "todo_app/hp_func"
+	st "todo_app/store"
 	"todo_app/types"
 )
 
@@ -23,10 +23,11 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	if hf.IsAuthenticUser(user.EmailAddress, user.Password) {
+	if IsAuthenticUser(user.EmailAddress, user.Password) {
 		fmt.Println("duration: ", duration)
 		jwtManager := auth.NewJWTWithConf(secretKey, duration)
-		userInDB := hf.GetUser(user.EmailAddress, user.Password)
+		var usr types.User
+		userInDB := usr.GetUserByEmailAndPassword(user.EmailAddress, user.Password)
 		payLoadData := map[string]interface{}{
 			"id":            userInDB.ID,
 			"username":      userInDB.Username,
@@ -62,7 +63,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
-	} else if hf.IsDuplicateUser(newUser.EmailAddress) {
+	} else if IsDuplicateUser(newUser.EmailAddress) {
 		err := json.NewEncoder(w).Encode("This email already exists in the system.")
 		if err != nil {
 			fmt.Println(err)
@@ -87,4 +88,17 @@ func isValidToken(token string) (map[string]interface{}, error, bool) {
 	}
 	fmt.Println(payLoadResult)
 	return payLoadResult, err, true
+}
+
+func IsDuplicateUser(emailAddress string) bool {
+	usrInDB := st.GetUserByEmailAddress(emailAddress)
+	if usrInDB.ID > 0 {
+		return true
+	}
+	return false
+}
+
+func IsAuthenticUser(emailAddress string, password string) bool {
+	usrInDB := st.GetUserByEmailAddress(emailAddress)
+	return usrInDB.EmailAddress == emailAddress && usrInDB.Password == password
 }

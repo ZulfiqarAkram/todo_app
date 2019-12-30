@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="abdee649-9665-44e8-ae11-f11b6bc76eda" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="abdee649-9665-44e8-ae11-f11b6bc76eda" name="Default Changelist" comment="refactoring project.">
+      <change afterPath="$PROJECT_DIR$/store/user.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/todoapp/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/bin/todoapp/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/auth/jwt_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/jwt_test.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/auth.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/items.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/items.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/controllers/jwt.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/jwt.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/data/db_data.go" beforeDir="false" afterPath="$PROJECT_DIR$/db/db_data.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/hp_func/general_hp.go" beforeDir="false" afterPath="$PROJECT_DIR$/hp_func/general_hp.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/auth_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/auth_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/items_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/items_test.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test/jwt_test.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/jwt_test.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/hp_func/general_hp.go" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/types/types.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,6 +39,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="DefaultGoTemplateProperty" value="Go File" />
+    <property name="GO_FMT" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -114,6 +110,10 @@
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="refactoring project." />
+    <option name="LAST_COMMIT_MESSAGE" value="refactoring project." />
+  </component>
   <component name="WindowStateProjectService">
     <state x="418" y="177" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1577689968914">
       <screen x="0" y="0" width="1920" height="1040" />
@@ -131,6 +131,14 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="842" y="223" width="628" height="589" key="#xdebugger.evaluate/0.0.1920.1040@0.0.1920.1040" timestamp="1577685789328" />
+    <state x="571" y="116" width="768" height="803" key="CommitChangelistDialog2" timestamp="1577703113109">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="571" y="116" width="768" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1577703113109" />
+    <state x="100" y="99" width="1720" height="840" key="DiffContextDialog" timestamp="1577702831983">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="100" y="99" width="1720" height="840" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1577702831983" />
     <state width="1874" height="275" key="GridCell.Tab.0.bottom" timestamp="1577698490394">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

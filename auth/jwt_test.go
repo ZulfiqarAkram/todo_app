@@ -11,7 +11,7 @@ func TestJWT_CanSign(t *testing.T) {
 
 	secret := "123"
 	duration := 1 * time.Second
-	jwtManager := auth2.NewJWTWithConf(secret, duration)
+	jwtManager := NewJWTWithConf(secret, duration)
 	token, err := jwtManager.Sign(nil)
 	assert.Nil(t, err)
 	assert.NotEmpty(t, token)
@@ -21,7 +21,7 @@ func TestJWT_CanSign(t *testing.T) {
 func TestJWT_ShouldDecodeBeforeOneSecond(t *testing.T) {
 	secret := "123"
 	duration := 1 * time.Second
-	jwtManager := auth2.NewJWTWithConf(secret, duration)
+	jwtManager := NewJWTWithConf(secret, duration)
 	token, err := jwtManager.Sign(nil)
 	assert.Nil(t, err)
 	_, err = jwtManager.Decode(token)
@@ -31,7 +31,7 @@ func TestJWT_ShouldDecodeBeforeOneSecond(t *testing.T) {
 func TestJWT_ShouldExpireAfterOneSecond(t *testing.T) {
 	secret := "123"
 	duration := 1 * time.Second
-	jwtManager := auth2.NewJWTWithConf(secret, duration)
+	jwtManager := NewJWTWithConf(secret, duration)
 	token, err := jwtManager.Sign(nil)
 	time.Sleep(2 * time.Second)
 	assert.Nil(t, err)
@@ -42,7 +42,7 @@ func TestJWT_ShouldExpireAfterOneSecond(t *testing.T) {
 func TestJWT_ShouldGetPayloadAfterDecode(t *testing.T) {
 	secret := "123"
 	duration := 1 * time.Second
-	jwtManager := auth2.NewJWTWithConf(secret, duration)
+	jwtManager := NewJWTWithConf(secret, duration)
 	x := map[string]interface{}{
 		"firstName": "John",
 		"lastName":  "Doe",

@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"strconv"
 	d "todo_app/db"
-	hf "todo_app/hp_func"
 	"todo_app/types"
 )
 
@@ -16,7 +15,8 @@ func AddItem(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("token")
 	payload, err, isValid := isValidToken(token)
 	if isValid {
-		usr := hf.ConvertMapToStruct(payload)
+		var usr types.User
+		usr = usr.ConvertToStruct(payload)
 		var newTodo types.TodoItem
 		err := json.NewDecoder(r.Body).Decode(&newTodo)
 		if err != nil {
@@ -44,7 +44,8 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("token")
 	payload, err, isValid := isValidToken(token)
 	if isValid {
-		usr := hf.ConvertMapToStruct(payload)
+		var usr types.User
+		usr = usr.ConvertToStruct(payload)
 		for index, item := range d.TodoDB {
 			id, err := strconv.ParseInt(params["id"], 16, 64)
 			if err != nil {
@@ -75,7 +76,8 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("token")
 	payload, err, isValid := isValidToken(token)
 	if isValid {
-		usr := hf.ConvertMapToStruct(payload)
+		var usr types.User
+		usr = usr.ConvertToStruct(payload)
 		var todoToBeUpdate types.TodoItem
 		for index, item := range d.TodoDB {
 			id, err := strconv.ParseInt(params["id"], 16, 64)
@@ -113,8 +115,11 @@ func DisplayItems(w http.ResponseWriter, r *http.Request) {
 	payload, err, isValid := isValidToken(token)
 	fmt.Println(payload, " | ", err, " | ", isValid)
 	if isValid {
-		usr := hf.ConvertMapToStruct(payload)
-		err := json.NewEncoder(w).Encode(hf.GetUserTodoItems(usr.ID))
+		var usr types.User
+		usr = usr.ConvertToStruct(payload)
+		var todoItem types.TodoItem
+		todoItems := todoItem.GetTodoItemsByUserID(usr.ID)
+		err := json.NewEncoder(w).Encode(todoItems)
 		if err != nil {
 			fmt.Println(err)
 		}
