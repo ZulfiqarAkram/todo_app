@@ -3,7 +3,6 @@ package types
 import (
 	"encoding/json"
 	"fmt"
-	d "todo_app/db"
 )
 
 type User struct {
@@ -18,16 +17,6 @@ type TodoItem struct {
 	UserID int    `json:"user_id"`
 }
 
-func (u *User) GetUserByEmailAndPassword(emailAddress string, password string) User {
-	var selUsr User
-	for _, usr := range d.UserDB {
-		if usr.EmailAddress == emailAddress && usr.Password == password {
-			selUsr = usr
-			break
-		}
-	}
-	return selUsr
-}
 func (u *User) ConvertToStruct(payload map[string]interface{}) User {
 	jsonBody, err := json.Marshal(payload)
 	if err != nil {
@@ -39,14 +28,4 @@ func (u *User) ConvertToStruct(payload map[string]interface{}) User {
 		fmt.Println(err1)
 	}
 	return usr
-}
-func (ti *TodoItem) GetTodoItemsByUserID(userID int) []TodoItem {
-	var fTodoItems []TodoItem
-
-	for _, todo := range d.TodoDB {
-		if todo.UserID == userID {
-			fTodoItems = append(fTodoItems, todo)
-		}
-	}
-	return fTodoItems
 }

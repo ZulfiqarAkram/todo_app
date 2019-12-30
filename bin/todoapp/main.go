@@ -4,12 +4,14 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	d "todo_app/db"
+	"todo_app/auth"
 	"todo_app/routes"
+	st "todo_app/store"
 )
 
 func main() {
-	d.SeedData()
+	auth.CreateJWTManager()
+	st.UploadMockData()
 	r := mux.NewRouter()
 	routes.Initialize(r)
 	log.Fatal(http.ListenAndServe(":8080", r))

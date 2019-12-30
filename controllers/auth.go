@@ -4,16 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 	"todo_app/auth"
-	d "todo_app/db"
 	st "todo_app/store"
 	"todo_app/types"
 )
-
-//TODO shift to config
-const secretKey = "my_super_secret_key"
-const duration = 60 * time.Second
 
 func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Inside Login func")
@@ -24,9 +18,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	if IsAuthenticUser(user.EmailAddress, user.Password) {
-		fmt.Println("duration: ", duration)
-		jwtManager := auth.NewJWTWithConf(secretKey, duration)
-		var usr types.User
+
+		var usr st.MyUser
 		userInDB := usr.GetUserByEmailAndPassword(user.EmailAddress, user.Password)
 		payLoadData := map[string]interface{}{
 			"id":            userInDB.ID,
@@ -34,7 +27,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 			"password":      userInDB.Password,
 			"email_address": userInDB.EmailAddress,
 		}
-		token, err := jwtManager.Sign(payLoadData)
+		token, err := auth.JWTManager.Sign(payLoadData)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -69,9 +62,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 	} else {
-		newUser.ID = len(d.UserDB) + 1
-		d.UserDB = append(d.UserDB, newUser)
-		fmt.Println("New user added: ", d.UserDB)
+		st.AddUser(newUser)
 		err := json.NewEncoder(w).Encode("New user has been registered.")
 		if err != nil {
 			fmt.Println(err)
@@ -79,9 +70,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func isValidToken(token string) (map[string]interface{}, error, bool) {
-	jwtManager := auth.NewJWTWithConf(secretKey, duration)
-	payLoadResult, err := jwtManager.Decode(token)
+func IsValidToken(token string) (map[string]interface{}, error, bool) {
+	payLoadResult, err := auth.JWTManager.Decode(token)
 	if err != nil {
 		fmt.Println(err)
 		return payLoadResult, err, false

@@ -2,14 +2,20 @@ package auth
 
 import (
 	"fmt"
-	"time"
-
 	jwt "github.com/dgrijalva/jwt-go"
+	"time"
+	cfg "todo_app/config"
 )
 
 type jwtAuth struct {
 	secret    string
 	expiresIn time.Duration
+}
+
+var JWTManager JWT
+
+func CreateJWTManager() {
+	JWTManager = NewJWTWithConf(cfg.SecretKey, cfg.Duration)
 }
 
 //JWT manages jwt

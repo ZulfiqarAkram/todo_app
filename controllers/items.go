@@ -6,14 +6,14 @@ import (
 	"github.com/gorilla/mux"
 	"net/http"
 	"strconv"
-	d "todo_app/db"
+	"todo_app/store"
 	"todo_app/types"
 )
 
 func AddItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	token := r.Header.Get("token")
-	payload, err, isValid := isValidToken(token)
+	payload, err, isValid := IsValidToken(token)
 	if isValid {
 		var usr types.User
 		usr = usr.ConvertToStruct(payload)
@@ -22,10 +22,8 @@ func AddItem(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
-		newTodo.ID = len(d.TodoDB) + 1
 		newTodo.UserID = usr.ID
-		d.TodoDB = append(d.TodoDB, newTodo)
-		fmt.Println("AFTER ADDED : ", d.TodoDB)
+		store.AddTodo(newTodo)
 		err1 := json.NewEncoder(w).Encode(newTodo)
 		if err1 != nil {
 			fmt.Println(err1)
@@ -42,24 +40,19 @@ func DeleteItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	token := r.Header.Get("token")
-	payload, err, isValid := isValidToken(token)
+	payload, err, isValid := IsValidToken(token)
 	if isValid {
 		var usr types.User
 		usr = usr.ConvertToStruct(payload)
-		for index, item := range d.TodoDB {
-			id, err := strconv.ParseInt(params["id"], 16, 64)
-			if err != nil {
-				fmt.Println(err)
-			}
-			if item.ID == int(id) && usr.ID == item.UserID {
-				d.TodoDB = append(d.TodoDB[:index], d.TodoDB[index+1:]...)
-				fmt.Println("AFTER REMOVED : ", d.TodoDB)
-				break
-			}
-		}
-		err := json.NewEncoder(w).Encode(d.TodoDB)
+		id, err := strconv.ParseInt(params["id"], 16, 64)
 		if err != nil {
 			fmt.Println(err)
+		}
+		store.DeleteTodo(int(id), usr.ID)
+
+		err1 := json.NewEncoder(w).Encode(store.GetTodoItems())
+		if err1 != nil {
+			fmt.Println(err1)
 		}
 	} else {
 		err := json.NewEncoder(w).Encode(err)
@@ -74,31 +67,23 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	token := r.Header.Get("token")
-	payload, err, isValid := isValidToken(token)
+	payload, err, isValid := IsValidToken(token)
 	if isValid {
 		var usr types.User
 		usr = usr.ConvertToStruct(payload)
 		var todoToBeUpdate types.TodoItem
-		for index, item := range d.TodoDB {
-			id, err := strconv.ParseInt(params["id"], 16, 64)
-			if err != nil {
-				fmt.Println(err)
-			}
-			if item.ID == int(id) && item.UserID == usr.ID {
-				d.TodoDB = append(d.TodoDB[:index], d.TodoDB[index+1:]...)
-				err := json.NewDecoder(r.Body).Decode(&todoToBeUpdate)
-				if err != nil {
-					fmt.Println(err)
-				}
-				todoToBeUpdate.ID = int(id)
-				d.TodoDB = append(d.TodoDB, todoToBeUpdate)
-				fmt.Println("AFTER UPDATED : ", d.TodoDB)
-				break
-			}
-		}
-		err := json.NewEncoder(w).Encode(todoToBeUpdate)
+		id, err := strconv.ParseInt(params["id"], 16, 64)
 		if err != nil {
 			fmt.Println(err)
+		}
+		err1 := json.NewDecoder(r.Body).Decode(&todoToBeUpdate)
+		if err1 != nil {
+			fmt.Println(err1)
+		}
+		store.UpdateTodo(int(id), usr.ID, todoToBeUpdate)
+		err2 := json.NewEncoder(w).Encode(todoToBeUpdate)
+		if err2 != nil {
+			fmt.Println(err2)
 		}
 	} else {
 		err := json.NewEncoder(w).Encode(err)
@@ -112,12 +97,12 @@ func UpdateItem(w http.ResponseWriter, r *http.Request) {
 func DisplayItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	token := r.Header.Get("token")
-	payload, err, isValid := isValidToken(token)
+	payload, err, isValid := IsValidToken(token)
 	fmt.Println(payload, " | ", err, " | ", isValid)
 	if isValid {
 		var usr types.User
 		usr = usr.ConvertToStruct(payload)
-		var todoItem types.TodoItem
+		var todoItem store.MyTodoItem
 		todoItems := todoItem.GetTodoItemsByUserID(usr.ID)
 		err := json.NewEncoder(w).Encode(todoItems)
 		if err != nil {
