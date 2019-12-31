@@ -2,15 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="abdee649-9665-44e8-ae11-f11b6bc76eda" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/config/conf.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/store/todo.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/auth/jwt.go" beforeDir="false" afterPath="$PROJECT_DIR$/auth/jwt.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/bin/todoapp/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/bin/todoapp/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/auth.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/controllers/items.go" beforeDir="false" afterPath="$PROJECT_DIR$/controllers/items.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/store/todo.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/todo.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/store/user.go" beforeDir="false" afterPath="$PROJECT_DIR$/store/user.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/types/types.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -134,30 +130,30 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="842" y="223" width="628" height="589" key="#xdebugger.evaluate/0.0.1920.1040@0.0.1920.1040" timestamp="1577685789328" />
-    <state x="571" y="116" width="768" height="803" key="CommitChangelistDialog2" timestamp="1577704516856">
+    <state x="571" y="116" width="768" height="803" key="CommitChangelistDialog2" timestamp="1577712253282">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="571" y="116" width="768" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1577704516856" />
-    <state x="100" y="99" width="1720" height="840" key="DiffContextDialog" timestamp="1577712207576">
+    <state x="571" y="116" width="768" height="803" key="CommitChangelistDialog2/0.0.1920.1040@0.0.1920.1040" timestamp="1577712253282" />
+    <state x="100" y="99" width="1720" height="840" key="DiffContextDialog" timestamp="1577713071814">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="100" y="99" width="1720" height="840" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1577712207576" />
-    <state width="1874" height="275" key="GridCell.Tab.0.bottom" timestamp="1577712172645">
+    <state x="100" y="99" width="1720" height="840" key="DiffContextDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1577713071814" />
+    <state width="1874" height="275" key="GridCell.Tab.0.bottom" timestamp="1577713005555">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1874" height="275" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1577712172645" />
-    <state width="1874" height="275" key="GridCell.Tab.0.center" timestamp="1577712172645">
+    <state width="1874" height="275" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1577713005555" />
+    <state width="1874" height="275" key="GridCell.Tab.0.center" timestamp="1577713005555">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1874" height="275" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1577712172645" />
-    <state width="1874" height="275" key="GridCell.Tab.0.left" timestamp="1577712172644">
+    <state width="1874" height="275" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1577713005555" />
+    <state width="1874" height="275" key="GridCell.Tab.0.left" timestamp="1577713005554">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1874" height="275" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1577712172644" />
-    <state width="1874" height="275" key="GridCell.Tab.0.right" timestamp="1577712172645">
+    <state width="1874" height="275" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1577713005554" />
+    <state width="1874" height="275" key="GridCell.Tab.0.right" timestamp="1577713005555">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state width="1874" height="275" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1577712172645" />
+    <state width="1874" height="275" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1577713005555" />
     <state width="1874" height="339" key="GridCell.Tab.1.bottom" timestamp="1577686032029">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
@@ -178,10 +174,10 @@
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="464" y="154" key="SettingsEditor/0.0.1920.1040@0.0.1920.1040" timestamp="1577712241613" />
-    <state x="646" y="259" width="628" height="520" key="find.popup" timestamp="1577706914315">
+    <state x="646" y="259" width="628" height="520" key="find.popup" timestamp="1577769339695">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
-    <state x="646" y="259" width="628" height="520" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1577706914315" />
+    <state x="646" y="259" width="628" height="520" key="find.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1577769339695" />
     <state x="631" y="313" width="658" height="410" key="git4idea.merge.GitPullDialog" timestamp="1577700935652">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>

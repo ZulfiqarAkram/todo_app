@@ -10,7 +10,6 @@ import (
 )
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Inside Login func")
 	w.Header().Set("Content-Type", "application/json")
 	var user types.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -18,9 +17,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 	if IsAuthenticUser(user.EmailAddress, user.Password) {
-
-		var usr st.MyUser
-		userInDB := usr.GetUserByEmailAndPassword(user.EmailAddress, user.Password)
+		userInDB := st.GetUserByEmailAndPassword(user.EmailAddress, user.Password)
 		payLoadData := map[string]interface{}{
 			"id":            userInDB.ID,
 			"username":      userInDB.Username,

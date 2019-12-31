@@ -6,6 +6,23 @@ import (
 	"todo_app/types"
 )
 
+//type UserStore interface {
+//	GetUserByEmailAddress(emailAddress string) types.User
+//	AddUser(newUser types.User)
+//	GetUserByEmailAndPassword(emailAddress string, password string) types.User
+//}
+
+//func ABC(x Userstore) {}
+
+//type userStore struct{}
+
+//NewStore NewStore
+//func NewStore() UserStore {
+//	u := &userStore{}
+//	ABC(u)
+//	return u
+//}
+
 func GetUserByEmailAddress(emailAddress string) types.User {
 	var user types.User
 	for _, usr := range db.UserDB {
@@ -27,11 +44,7 @@ func UploadMockData() {
 	db.SeedData()
 }
 
-type MyUser struct {
-	*types.User
-}
-
-func (u *MyUser) GetUserByEmailAndPassword(emailAddress string, password string) types.User {
+func GetUserByEmailAndPassword(emailAddress string, password string) types.User {
 	var selUsr types.User
 	for _, usr := range db.UserDB {
 		if usr.EmailAddress == emailAddress && usr.Password == password {

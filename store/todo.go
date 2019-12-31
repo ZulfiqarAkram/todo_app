@@ -6,10 +6,6 @@ import (
 	"todo_app/types"
 )
 
-type MyTodoItem struct {
-	*types.TodoItem
-}
-
 func GetTodoItems() []types.TodoItem {
 	return db.TodoDB
 }
@@ -42,7 +38,7 @@ func UpdateTodo(id int, userID int, todoToBeUpdate types.TodoItem) {
 	}
 }
 
-func (ti *MyTodoItem) GetTodoItemsByUserID(userID int) []types.TodoItem {
+func GetTodoItemsByUserID(userID int) []types.TodoItem {
 	var fTodoItems []types.TodoItem
 
 	for _, todo := range db.TodoDB {

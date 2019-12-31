@@ -98,12 +98,10 @@ func DisplayItems(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	token := r.Header.Get("token")
 	payload, err, isValid := IsValidToken(token)
-	fmt.Println(payload, " | ", err, " | ", isValid)
 	if isValid {
 		var usr types.User
 		usr = usr.ConvertToStruct(payload)
-		var todoItem store.MyTodoItem
-		todoItems := todoItem.GetTodoItemsByUserID(usr.ID)
+		todoItems := store.GetTodoItemsByUserID(usr.ID)
 		err := json.NewEncoder(w).Encode(todoItems)
 		if err != nil {
 			fmt.Println(err)
