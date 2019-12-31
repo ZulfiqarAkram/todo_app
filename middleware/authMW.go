@@ -2,8 +2,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
-	"log"
 	"net/http"
 	"todo_app/auth"
 )
@@ -29,16 +27,15 @@ func (l *Authorization) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	payLoad, err, isValid := IsValidToken(token)
-	if isValid {
-		contextWithUser := context.WithValue(r.Context(), AuthenticatedUserKey, payLoad)
-		rWithUser := r.WithContext(contextWithUser)
-		l.handler.ServeHTTP(w, rWithUser)
+	payLoad, err := IsValidToken(token)
+	if err != nil {
+		http.Error(w, err.Error(), 401)
 		return
+
 	}
-	http.Error(w, err.Error(), 401)
-	log.Printf("=> %s %s", r.Method, r.URL.Path)
-	return
+	contextWithUser := context.WithValue(r.Context(), AuthenticatedUserKey, payLoad)
+	rWithUser := r.WithContext(contextWithUser)
+	l.handler.ServeHTTP(w, rWithUser)
 }
 
 //Constructor
@@ -46,12 +43,10 @@ func NewAuthorization(handlerToWrap http.Handler) *Authorization {
 	return &Authorization{handlerToWrap}
 }
 
-func IsValidToken(token string) (map[string]interface{}, error, bool) {
+func IsValidToken(token string) (map[string]interface{}, error) {
 	payLoadResult, err := auth.JWTManager.Decode(token)
 	if err != nil {
-		fmt.Println(err)
-		return payLoadResult, err, false
+		return payLoadResult, err
 	}
-	fmt.Println(payLoadResult)
-	return payLoadResult, err, true
+	return payLoadResult, nil
 }

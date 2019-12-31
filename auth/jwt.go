@@ -50,6 +50,9 @@ func (j *jwtAuth) Decode(token string) (payload map[string]interface{}, err erro
 		}
 		return []byte(j.secret), nil
 	})
+	if err != nil {
+		return nil, err
+	}
 	if !t.Valid {
 		return nil, fmt.Errorf("token is not valid anymore")
 	}

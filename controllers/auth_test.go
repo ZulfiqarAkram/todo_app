@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestLogin(t *testing.T) {
+func TestLogin_ShouldGenerateToken(t *testing.T) {
 	userCredentials := []byte(`{"email_address":"ali@gmail.com","password":"1234"}`)
 	req, err := http.NewRequest("POST", "/api/login", bytes.NewBuffer(userCredentials))
 	if err != nil {
@@ -25,7 +25,20 @@ func TestLogin(t *testing.T) {
 	assert.NotEmpty(t, token)
 	assert.Equal(t, len(strings.Split(token, ".")), 2)
 }
+func TestLogin_ShouldThrowUnAuthorizeError(t *testing.T) {
+	userCredentials := []byte(`{"email_address":"ali123@gmail.com","password":"65465"}`)
+	req, err := http.NewRequest("POST", "/api/login", bytes.NewBuffer(userCredentials))
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(Login)
+	handler.ServeHTTP(rr, req)
 
+	expected := "Unauthorized\n"
+	assert.Equal(t, expected, rr.Body.String())
+}
 func TestRegister(t *testing.T) {
 	userCredentials := []byte(`{"email_address":"moon@gmail.com","password":"1234","username":"moon"}`)
 	req, err := http.NewRequest("POST", "/api/register", bytes.NewBuffer(userCredentials))

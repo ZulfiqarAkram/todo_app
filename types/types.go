@@ -2,7 +2,6 @@ package types
 
 import (
 	"encoding/json"
-	"fmt"
 )
 
 type User struct {
@@ -17,15 +16,15 @@ type TodoItem struct {
 	UserID int    `json:"user_id"`
 }
 
-func (u *User) ConvertToStruct(payload interface{}) User {
+func (u *User) ConvertToStruct(payload interface{}) (User, error) {
+	usr := User{}
 	jsonBody, err := json.Marshal(payload)
 	if err != nil {
-		fmt.Println(err)
+		return usr, err
 	}
-	usr := User{}
 	err1 := json.Unmarshal(jsonBody, &usr)
 	if err1 != nil {
-		fmt.Println(err1)
+		return usr, err1
 	}
-	return usr
+	return usr, nil
 }
