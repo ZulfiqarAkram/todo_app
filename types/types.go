@@ -17,7 +17,7 @@ type TodoItem struct {
 	UserID int    `json:"user_id"`
 }
 
-func (u *User) ConvertToStruct(payload map[string]interface{}) User {
+func (u *User) ConvertToStruct(payload interface{}) User {
 	jsonBody, err := json.Marshal(payload)
 	if err != nil {
 		fmt.Println(err)

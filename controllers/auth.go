@@ -67,14 +67,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func IsValidToken(token string) (map[string]interface{}, error, bool) {
+func GetPayload(token string) (map[string]interface{}, error) {
 	payLoadResult, err := auth.JWTManager.Decode(token)
-	if err != nil {
-		fmt.Println(err)
-		return payLoadResult, err, false
-	}
-	fmt.Println(payLoadResult)
-	return payLoadResult, err, true
+	return payLoadResult, err
 }
 
 func IsDuplicateUser(emailAddress string) bool {
