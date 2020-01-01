@@ -13,13 +13,13 @@ func SeedData() {
 		{
 			ID:           1,
 			Username:     "Ali",
-			Password:     "1234",
+			Password:     "123456",
 			EmailAddress: "ali@gmail.com",
 		},
 		{
 			ID:           2,
 			Username:     "Muhammad",
-			Password:     "786",
+			Password:     "786786",
 			EmailAddress: "muhammad@gmail.com",
 		},
 	}

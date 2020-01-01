@@ -12,11 +12,17 @@ import (
 )
 
 func main() {
+	// Register JWT
 	auth.CreateJWTManager()
+
+	//Seed DB
 	st.UploadMockData()
+
+	//Create Routes
 	r := mux.NewRouter()
 	routes.Initialize(r)
 
+	//Middleware
 	n := negroni.New()
 	n.UseHandler(middleware.NewAuthorization(r))
 

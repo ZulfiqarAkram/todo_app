@@ -5,26 +5,36 @@ import (
 )
 
 type User struct {
-	ID           int    `json:"id"`
-	Username     string `json:"username"`
-	Password     string `json:"password"`
-	EmailAddress string `json:"email_address"`
+	ID           int    `json:"id" validate:"required"`
+	Username     string `json:"username" validate:"required,min=5,max=15"`
+	Password     string `json:"password" validate:"required,pwdMinLenSix"`
+	EmailAddress string `json:"email_address" validate:"required,email"`
 }
+
+type LoginUser struct {
+	Password     string `json:"password" validate:"required,pwdMinLenSix"`
+	EmailAddress string `json:"email_address" validate:"required,email"`
+}
+
+type RegisterUser struct {
+	Username     string `json:"username" validate:"required,min=5,max=15"`
+	Password     string `json:"password" validate:"required,pwdMinLenSix"`
+	EmailAddress string `json:"email_address" validate:"required,email"`
+}
+
 type TodoItem struct {
 	ID     int    `json:"id"`
-	Text   string `json:"text"`
+	Text   string `json:"text" validate:"required"`
 	UserID int    `json:"user_id"`
 }
 
-func (u *User) ConvertToStruct(payload interface{}) (User, error) {
-	usr := User{}
+func (u *User) ConvertToStruct(payload interface{}) error {
 	jsonBody, err := json.Marshal(payload)
 	if err != nil {
-		return usr, err
+		return err
 	}
-	err1 := json.Unmarshal(jsonBody, &usr)
-	if err1 != nil {
-		return usr, err1
+	if err = json.Unmarshal(jsonBody, &u); err != nil {
+		return err
 	}
-	return usr, nil
+	return nil
 }

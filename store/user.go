@@ -6,23 +6,6 @@ import (
 	"todo_app/types"
 )
 
-//type UserStore interface {
-//	GetUserByEmailAddress(emailAddress string) types.User
-//	AddUser(newUser types.User)
-//	GetUserByEmailAndPassword(emailAddress string, password string) types.User
-//}
-
-//func ABC(x Userstore) {}
-
-//type userStore struct{}
-
-//NewStore NewStore
-//func NewStore() UserStore {
-//	u := &userStore{}
-//	ABC(u)
-//	return u
-//}
-
 func GetUserByEmailAddress(emailAddress string) types.User {
 	var user types.User
 	for _, usr := range db.UserDB {
