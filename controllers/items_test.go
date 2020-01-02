@@ -19,6 +19,7 @@ func TestAddItem(t *testing.T) {
 	auth.CreateJWTManager()
 	//Middleware
 	n := negroni.New()
+	rr := httptest.NewRecorder()
 
 	//Register Request
 	newUser := []byte(`{"username":"moon_moon", "email_address":"moon@gmail.com","password":"123456"}`)
@@ -29,7 +30,6 @@ func TestAddItem(t *testing.T) {
 	regReq.Header.Set("Content-Type", "application/json")
 	handler := http.HandlerFunc(Register)
 	n.UseHandler(middleware.NewAuthorization(handler))
-	rr := httptest.NewRecorder()
 	n.ServeHTTP(rr, regReq)
 
 	var jsonRes1 boomErr
@@ -48,11 +48,10 @@ func TestAddItem(t *testing.T) {
 	loginReq.Header.Set("Content-Type", "application/json")
 	loginHandler := http.HandlerFunc(Login)
 	n.UseHandler(middleware.NewAuthorization(loginHandler))
-	rr1 := httptest.NewRecorder()
-	n.ServeHTTP(rr1, loginReq)
+	n.ServeHTTP(rr, loginReq)
 
 	var jsonRes boomErr
-	err = json.NewDecoder(rr1.Body).Decode(&jsonRes)
+	err = json.NewDecoder(rr.Body).Decode(&jsonRes)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -70,17 +69,16 @@ func TestAddItem(t *testing.T) {
 	addItemReq.Header.Set("Token", token)
 	AddHandler := http.HandlerFunc(AddItem)
 	n.UseHandler(middleware.NewAuthorization(AddHandler))
-	rr2 := httptest.NewRecorder()
-	n.ServeHTTP(rr2, addItemReq)
+	n.ServeHTTP(rr, addItemReq)
 
-	if status := rr2.Code; status != http.StatusOK {
+	if status := rr.Code; status != http.StatusOK {
 		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
 	}
 
 	expected := `{"ID":1,"Text":"Say Hi"}`
-	_, err1 := JSONBytesEqual([]byte(rr2.Body.String()), []byte(expected))
+	_, err1 := JSONBytesEqual([]byte(rr.Body.String()), []byte(expected))
 	if err1 != nil {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr2.Body.String(), expected)
+		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
 	}
 }
 
