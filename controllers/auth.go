@@ -62,14 +62,11 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
 		boom.BadRequest(w, err.Error())
-
-		//http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if err := myValidator.ValidateStruct(newUser); err != nil {
 		boom.BadRequest(w, err.Error())
-		//http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -77,7 +74,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		err := json.NewEncoder(w).Encode("This email already exists in the system.")
 		if err != nil {
 			boom.Internal(w, err.Error())
-			//http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	}
@@ -87,10 +83,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		Password:     newUser.Password,
 		EmailAddress: newUser.EmailAddress,
 	})
-	err = JsonResponse(w, 200, "New user has been registered")
+	err = JsonResponse(w, 200, "New user has been registered.")
 	if err != nil {
 		boom.Internal(w, err.Error())
-		//http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }

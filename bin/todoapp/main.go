@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
 	"log"
@@ -12,6 +13,7 @@ import (
 )
 
 func main() {
+	fmt.Println("main()")
 	// Register JWT
 	auth.CreateJWTManager()
 

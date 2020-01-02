@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"todo_app/auth"
 )
@@ -40,6 +41,7 @@ func (l *Authorization) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 //Constructor
 func NewAuthorization(handlerToWrap http.Handler) *Authorization {
+	fmt.Println("Constructor NewAuthorization()")
 	return &Authorization{handlerToWrap}
 }
 
