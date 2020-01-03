@@ -12,13 +12,13 @@ func SeedData() {
 	UserDB = []types.User{
 		{
 			ID:           1,
-			Username:     "Ali",
+			Username:     "aliahmed",
 			Password:     "123456",
-			EmailAddress: "ali@gmail.com",
+			EmailAddress: "aliahmed@gmail.com",
 		},
 		{
 			ID:           2,
-			Username:     "Muhammad",
+			Username:     "muhammad",
 			Password:     "786786",
 			EmailAddress: "muhammad@gmail.com",
 		},

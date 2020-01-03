@@ -1,127 +1,92 @@
 package controllers
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"github.com/stretchr/testify/assert"
-	"github.com/urfave/negroni"
-	"net/http"
-	"net/http/httptest"
 	"strings"
 	"testing"
-	"todo_app/auth"
-	"todo_app/middleware"
 )
 
 func TestRegister_ShouldAddNewUserIntoDB(t *testing.T) {
-	newUser := []byte(`{"email_address":"moon@gmail.com","password":"123456","username":"moon_moon"}`)
-	body, err := RegisterUser(newUser)
+	var RegisterUrl = "http://localhost:8080/api/register"
+	newUser := []byte(`{
+		"id":"0",
+		"username" : "raja",
+		"email_address" : "raja123@gmail.com",
+		"password":"123456"
+	}`)
+	var headers = map[string]string{
+		"Content-Type": "application/json",
+	}
+	boomRes, err := SendRequest("POST", RegisterUrl, newUser, headers)
 	if err != nil {
-		t.Errorf(err.Error())
+		fmt.Println(err)
 		return
 	}
-	var jsonRes boomErr
-	err = json.NewDecoder(body).Decode(&jsonRes)
-	if err != nil {
-		t.Errorf(err.Error())
-		return
-	}
-
-	expected := "New user has been registered."
-	if jsonRes.Message != expected {
-		t.Errorf("handler returned unexpected body: got %v want %v", body.String(), expected)
-	}
+	fmt.Println(boomRes.Message)
+	assert.Equal(t, boomRes.Message, "New user has been registered.")
 
 }
 func TestLogin_ShouldGenerateToken(t *testing.T) {
 	//Register
-	newUser := []byte(`{"email_address":"moon@gmail.com","password":"123456","username":"moon_moon"}`)
-	_, err := RegisterUser(newUser)
+	var RegisterUrl = "http://localhost:8080/api/register"
+	newUser := []byte(`{
+		"id":"0",
+		"username" : "hamza",
+		"email_address" : "hamza123@gmail.com",
+		"password":"123456"
+	}`)
+	var headers = map[string]string{
+		"Content-Type": "application/json",
+	}
+	boomRes, err := SendRequest("POST", RegisterUrl, newUser, headers)
 	if err != nil {
-		t.Errorf(err.Error())
+		fmt.Println(err)
 		return
 	}
+	fmt.Println(boomRes.Message)
+	assert.Equal(t, boomRes.Message, "New user has been registered.")
+
 	//Login
-	userCredentials := []byte(`{"email_address":"moon@gmail.com","password":"123456"}`)
-	token, err := LoginUser(userCredentials)
+	loginCredentials := []byte(`{"email_address":"hamza123@gmail.com","password":"123456"}`)
+	loginUrl := "http://localhost:8080/api/login"
+	boomRes, err = SendRequest("POST", loginUrl, loginCredentials, headers)
 	if err != nil {
-		t.Errorf(err.Error())
+		fmt.Println(err)
+		return
 	}
-	assert.NotEmpty(t, token)
+	fmt.Println(boomRes.Message)
+	token := boomRes.Message
 	assert.Equal(t, len(strings.Split(token, ".")), 3)
 }
 func TestLogin_ShouldThrowUnAuthorizeError(t *testing.T) {
 	//Register
-	newUser := []byte(`{"email_address":"moon@gmail.com","password":"123456","username":"moon_moon"}`)
-	_, err := RegisterUser(newUser)
+	var RegisterUrl = "http://localhost:8080/api/register"
+	newUser := []byte(`{
+		"id":"0",
+		"username" : "kamran",
+		"email_address" : "kamran123@gmail.com",
+		"password":"123456"
+	}`)
+	var headers = map[string]string{
+		"Content-Type": "application/json",
+	}
+	boomRes, err := SendRequest("POST", RegisterUrl, newUser, headers)
 	if err != nil {
-		t.Errorf(err.Error())
+		fmt.Println(err)
 		return
 	}
+	fmt.Println(boomRes.Message)
+	assert.Equal(t, boomRes.Message, "New user has been registered.")
+
 	//Login
-	invalidUserCredentials := []byte(`{"email_address":"moon123@gmail.com","password":"123444"}`)
-	message, err := LoginUser(invalidUserCredentials)
+	loginCredentials := []byte(`{"email_address":"kamran123@gmail.com","password":"1234444"}`)
+	loginUrl := "http://localhost:8080/api/login"
+	boomRes, err = SendRequest("POST", loginUrl, loginCredentials, headers)
 	if err != nil {
-		t.Errorf(err.Error())
+		fmt.Println(err)
+		return
 	}
-
-	expected := "Unauthorized"
-	assert.Equal(t, expected, message)
-}
-
-func RegisterUser(newUser []byte) (*bytes.Buffer, error) {
-	// Register JWT
-	auth.CreateJWTManager()
-
-	req, err := http.NewRequest("POST", "/api/register", bytes.NewBuffer(newUser))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(Register)
-	//Middleware
-	n := negroni.New()
-	n.UseHandler(middleware.NewAuthorization(handler))
-	n.ServeHTTP(rr, req)
-	return rr.Body, nil
-
-}
-func LoginUser(userCredentials []byte) (string, error) {
-	req, err := http.NewRequest("POST", "/api/login", bytes.NewBuffer(userCredentials))
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(Login)
-	//Middleware
-	n := negroni.New()
-	n.UseHandler(middleware.NewAuthorization(handler))
-	n.ServeHTTP(rr, req)
-
-	var jsonRes boomErr
-	err = json.NewDecoder(rr.Body).Decode(&jsonRes)
-	if err != nil {
-		return "", err
-	}
-
-	fmt.Println(jsonRes)
-	return jsonRes.Message, nil
-}
-func RegisterAndLoginUser() (string, error) {
-	//Register
-	newUser := []byte(`{""username":"moon_moon", "email_address":"moon@gmail.com","password":"123456"}`)
-	_, err := RegisterUser(newUser)
-	if err != nil {
-		return "", err
-	}
-	//Login
-	invalidUserCredentials := []byte(`{"email_address":"moon@gmail.com","password":"123456"}`)
-	token, err := LoginUser(invalidUserCredentials)
-	if err != nil {
-		return "", err
-	}
-	return token, err
+	fmt.Println(boomRes.Message)
+	assert.Equal(t, boomRes.Message, "Unauthorized")
 }

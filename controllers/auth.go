@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/darahayes/go-boom"
 	"net/http"
 	"todo_app/auth"
@@ -18,19 +19,16 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&loginUser)
 	if err != nil {
 		boom.BadRequest(w, err.Error())
-		//		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if err := myValidator.ValidateStruct(loginUser); err != nil {
 		boom.BadRequest(w, err.Error())
-		//		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if !IsAuthenticUser(loginUser.EmailAddress, loginUser.Password) {
 		boom.Unathorized(w, "Unauthorized")
-		//		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 		return
 	}
 
@@ -44,20 +42,17 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	token, err := auth.JWTManager.Sign(payLoadData)
 	if err != nil {
 		boom.Internal(w, err.Error())
-		//http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	//err = json.NewEncoder(w).Encode(token)
 	err = JsonResponse(w, 200, token)
 	if err != nil {
 		boom.Internal(w, err.Error())
-		//http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
-
 func Register(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	fmt.Println("Register() called.")
+	w.Header().Set("Content-Type", "application/json")
 	var newUser types.RegisterUser
 	err := json.NewDecoder(r.Body).Decode(&newUser)
 	if err != nil {
@@ -71,11 +66,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if IsDuplicateUser(newUser.EmailAddress) {
-		err := json.NewEncoder(w).Encode("This email already exists in the system.")
-		if err != nil {
-			boom.Internal(w, err.Error())
-			return
-		}
+		boom.BadRequest(w, "This email already exists in the system.")
+		return
 	}
 	st.AddUser(types.User{
 		ID:           0,
@@ -90,22 +82,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+//Helper functions
 func IsDuplicateUser(emailAddress string) bool {
 	usrInDB := st.GetUserByEmailAddress(emailAddress)
 	return usrInDB.ID > 0
 }
-
 func IsAuthenticUser(emailAddress string, password string) bool {
 	usrInDB := st.GetUserByEmailAddress(emailAddress)
 	return usrInDB.EmailAddress == emailAddress && usrInDB.Password == password
 }
-
-type boomErr struct {
-	ErrorType  string `json:"error"`
-	Message    string `json:"message"`
-	StatusCode int    `json:"statusCode"`
-}
-
 func JsonResponse(w http.ResponseWriter, statusCode int, message string) error {
 	var codes = map[int]string{
 		100: "Continue",
@@ -177,4 +162,10 @@ func JsonResponse(w http.ResponseWriter, statusCode int, message string) error {
 	w.WriteHeader(statusCode)
 	_, err := w.Write(errString)
 	return err
+}
+
+type boomErr struct {
+	ErrorType  string `json:"error"`
+	Message    string `json:"message"`
+	StatusCode int    `json:"statusCode"`
 }

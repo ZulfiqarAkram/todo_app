@@ -4,186 +4,236 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/urfave/negroni"
+	"gopkg.in/go-playground/assert.v1"
 	"net/http"
-	"net/http/httptest"
-	"reflect"
+	"strings"
 	"testing"
-	"todo_app/auth"
-	"todo_app/middleware"
+	"todo_app/types"
 )
 
 func TestAddItem(t *testing.T) {
-	// Register JWT
-	auth.CreateJWTManager()
-	//Middleware
-	n := negroni.New()
-	rr := httptest.NewRecorder()
-
-	//Register Request
-	newUser := []byte(`{"username":"moon_moon", "email_address":"moon@gmail.com","password":"123456"}`)
-	regReq, err := http.NewRequest("POST", "/api/register", bytes.NewBuffer(newUser))
+	//Register
+	boomRes, err := RegisterUser()
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(err)
+		return
 	}
-	regReq.Header.Set("Content-Type", "application/json")
-	handler := http.HandlerFunc(Register)
-	n.UseHandler(middleware.NewAuthorization(handler))
-	n.ServeHTTP(rr, regReq)
-
-	var jsonRes1 boomErr
-	err = json.NewDecoder(rr.Body).Decode(&jsonRes1)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	fmt.Println(jsonRes1)
+	assert.Equal(t, boomRes.Message, "New user has been registered.")
 
 	//Login Request
-	validUserCredentials := []byte(`{"email_address":"moon@gmail.com","password":"123456"}`)
-	loginReq, err := http.NewRequest("POST", "/api/login", bytes.NewBuffer(validUserCredentials))
+	boomRes, err = LoginUser()
+	token := boomRes.Message
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println(err)
+		return
 	}
-	loginReq.Header.Set("Content-Type", "application/json")
-	loginHandler := http.HandlerFunc(Login)
-	n.UseHandler(middleware.NewAuthorization(loginHandler))
-	n.ServeHTTP(rr, loginReq)
-
-	var jsonRes boomErr
-	err = json.NewDecoder(rr.Body).Decode(&jsonRes)
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-
-	token := jsonRes.Message
+	assert.Equal(t, len(strings.Split(token, ".")), 3)
 
 	//Add item request
-	var jsonStr = []byte(`{"Text":"Say Hi"}`)
-	addItemReq, err := http.NewRequest("POST", "/api/todo", bytes.NewBuffer(jsonStr))
+	boomRes, err = AddTodo(token)
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		return
 	}
-
-	addItemReq.Header.Set("Content-Type", "application/json")
-	addItemReq.Header.Set("Token", token)
-	AddHandler := http.HandlerFunc(AddItem)
-	n.UseHandler(middleware.NewAuthorization(AddHandler))
-	n.ServeHTTP(rr, addItemReq)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
-	}
-
-	expected := `{"ID":1,"Text":"Say Hi"}`
-	_, err1 := JSONBytesEqual([]byte(rr.Body.String()), []byte(expected))
-	if err1 != nil {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
-	}
+	assert.Equal(t, boomRes.Message, "New todo item has been added.")
 }
-
 func TestDisplayItems(t *testing.T) {
-	token, err := LoginUser([]byte(`{"id":"1"}`))
+	//Register
+	boomRes, err := RegisterUser()
 	if err != nil {
-		t.Errorf(err.Error())
+		fmt.Println(err)
+		return
 	}
+	assert.Equal(t, boomRes.Message, "New user has been registered.")
 
-	req, err := http.NewRequest("GET", "/api/todo", nil)
+	//Login Request
+	boomRes, err = LoginUser()
+	token := boomRes.Message
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		return
 	}
+	assert.Equal(t, len(strings.Split(token, ".")), 3)
 
+	//Add item request
+	boomRes, err = AddTodo(token)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	assert.Equal(t, boomRes.Message, "New todo item has been added.")
+
+	//Display
+	displayItemUrl := "http://localhost:8080/api/todo"
+	req, err := http.NewRequest("GET", displayItemUrl, nil)
+	if err != nil {
+		fmt.Println(err)
+	}
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Token", token)
-	rr := httptest.NewRecorder()
-	handler := http.HandlerFunc(DisplayItems)
-	//Middleware
-	n := negroni.New()
-	n.UseHandler(middleware.NewAuthorization(handler))
-	n.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	var c http.Client
+	res, err := c.Do(req)
+	if err != nil {
+		fmt.Println(err)
 	}
-
-	// Check the response body is what we expect.
-	expected := `[{"ID":1,"Text":"hello"},{"ID":2,"Text":"world"}]`
-	_, err1 := JSONBytesEqual([]byte(rr.Body.String()), []byte(expected))
-	if err1 != nil {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	assert.Equal(t, err, nil)
+	var myTodo []types.TodoItem
+	err = json.NewDecoder(res.Body).Decode(&myTodo)
+	if err != nil {
+		fmt.Println(err)
 	}
+	assert.Equal(t, len(myTodo), 1)
+
 }
-
 func TestUpdateItem(t *testing.T) {
-	var jsonStr = []byte(`{"ID":1,"Text":"No Hello"}`)
-
-	req, err := http.NewRequest("PUT", "/api/todo/1", bytes.NewBuffer(jsonStr))
+	//Register
+	boomRes, err := RegisterUser()
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		return
+	}
+	assert.Equal(t, boomRes.Message, "New user has been registered.")
+
+	//Login Request
+	boomRes, err = LoginUser()
+	token := boomRes.Message
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	assert.Equal(t, len(strings.Split(token, ".")), 3)
+
+	//Add item request
+	boomRes, err = AddTodo(token)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	assert.Equal(t, boomRes.Message, "New todo item has been added.")
+
+	//Update
+	updateItemUrl := "http://localhost:8080/api/todo/5"
+	var updateTodoItem = []byte(`{"Text":"Say No"}`)
+	req, err := http.NewRequest("PUT", updateItemUrl, bytes.NewBuffer(updateTodoItem))
+	if err != nil {
+		fmt.Println(err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	rr := httptest.NewRecorder()
-
-	//Hack to try to fake gorilla/mux vars
-	vars := map[string]string{
-		"id": "1",
+	req.Header.Set("Token", token)
+	var c http.Client
+	res, err := c.Do(req)
+	if err != nil {
+		fmt.Println(err)
 	}
-	req = mux.SetURLVars(req, vars)
-
-	handler := http.HandlerFunc(UpdateItem)
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	assert.Equal(t, err, nil)
+	var myTodo types.TodoItem
+	err = json.NewDecoder(res.Body).Decode(&myTodo)
+	if err != nil {
+		fmt.Println(err)
 	}
-
-	expected := `{"ID":1,"Text":"No Hello"}`
-	_, err1 := JSONBytesEqual([]byte(rr.Body.String()), []byte(expected))
-	if err1 != nil {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
-	}
+	fmt.Println(myTodo)
+	assert.Equal(t, myTodo.Text, "Say No")
 
 }
-
 func TestDeleteItem(t *testing.T) {
-	var jsonStr = []byte(`{"ID":1,"Text":"hello"}`)
-
-	req, err := http.NewRequest("PUT", "/api/todo/1", bytes.NewBuffer(jsonStr))
+	//Register
+	boomRes, err := RegisterUser()
 	if err != nil {
-		t.Fatal(err)
+		fmt.Println(err)
+		return
 	}
-	req.Header.Set("Content-Type", "application/json")
-	rr := httptest.NewRecorder()
+	assert.Equal(t, boomRes.Message, "New user has been registered.")
 
-	//Hack to try to fake gorilla/mux vars
-	vars := map[string]string{
-		"id": "1",
+	//Login Request
+	boomRes, err = LoginUser()
+	token := boomRes.Message
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
-	req = mux.SetURLVars(req, vars)
+	assert.Equal(t, len(strings.Split(token, ".")), 3)
 
-	handler := http.HandlerFunc(DeleteItem)
-	handler.ServeHTTP(rr, req)
-
-	if status := rr.Code; status != http.StatusOK {
-		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	//Add item request
+	boomRes, err = AddTodo(token)
+	if err != nil {
+		fmt.Println(err)
+		return
 	}
+	assert.Equal(t, boomRes.Message, "New todo item has been added.")
 
-	expected := `{"ID":2,"Text":"world"}`
-	_, err1 := JSONBytesEqual([]byte(rr.Body.String()), []byte(expected))
-	if err1 != nil {
-		t.Errorf("handler returned unexpected body: got %v want %v", rr.Body.String(), expected)
+	//Delete
+	addItemUrl := "http://localhost:8080/api/todo/5"
+	var headersWithToken = map[string]string{
+		"Content-Type": "application/json",
+		"Token":        token,
 	}
+	boomRes, err = SendRequest("DELETE", addItemUrl, nil, headersWithToken)
+	fmt.Println(boomRes.Message)
+	assert.Equal(t, err, nil)
+	assert.Equal(t, boomRes.Message, "Todo item has been deleted.")
 
 }
 
-// compare two bytes json
-func JSONBytesEqual(a, b []byte) (bool, error) {
-	var j, j2 interface{}
-	if err := json.Unmarshal(a, &j); err != nil {
-		return false, err
+// Helper functions
+func RegisterUser() (MyBoom, error) {
+	//Register Request.
+	var RegisterUrl = "http://localhost:8080/api/register"
+	newUser := []byte(`{
+		"id":"0",
+		"username" : "hamza",
+		"email_address" : "hamza123@gmail.com",
+		"password":"123456"
+	}`)
+	var headers = map[string]string{
+		"Content-Type": "application/json",
 	}
-	if err := json.Unmarshal(b, &j2); err != nil {
-		return false, err
+	boomRes, err := SendRequest("POST", RegisterUrl, newUser, headers)
+	fmt.Println(boomRes.Message)
+	return boomRes, err
+}
+func LoginUser() (MyBoom, error) {
+	loginCredentials := []byte(`{"email_address":"hamza123@gmail.com","password":"123456"}`)
+	loginUrl := "http://localhost:8080/api/login"
+	var headers = map[string]string{
+		"Content-Type": "application/json",
 	}
-	return reflect.DeepEqual(j2, j), nil
+	boomRes, err := SendRequest("POST", loginUrl, loginCredentials, headers)
+	fmt.Println(boomRes.Message)
+	return boomRes, err
+}
+func AddTodo(token string) (MyBoom, error) {
+	var newTodoItem = []byte(`{"Text":"Say Hi"}`)
+	addItemUrl := "http://localhost:8080/api/todo"
+	var headersWithToken = map[string]string{
+		"Content-Type": "application/json",
+		"Token":        token,
+	}
+	boomRes, err := SendRequest("POST", addItemUrl, newTodoItem, headersWithToken)
+	fmt.Println(boomRes.Message)
+	return boomRes, err
+}
+func SendRequest(method string, url string, body []byte, header map[string]string) (MyBoom, error) {
+	var myBoom MyBoom
+
+	req, err := http.NewRequest(method, url, bytes.NewBuffer(body))
+	if err != nil {
+		return myBoom, err
+	}
+	for key, value := range header {
+		req.Header.Set(key, value)
+	}
+	var c http.Client
+	res, err := c.Do(req)
+	if err != nil {
+		return myBoom, err
+	}
+	fmt.Println(res.Body)
+	err = json.NewDecoder(res.Body).Decode(&myBoom)
+	return myBoom, err
+}
+
+type MyBoom struct {
+	ErrorType  string `json:"error"`
+	Message    string `json:"message"`
+	StatusCode int    `json:"statusCode"`
 }
