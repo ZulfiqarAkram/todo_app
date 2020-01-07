@@ -31,13 +31,5 @@ func NewAPI() *API {
 
 func (api *API) Initialize() {
 	api.MyStore.SeedDatabase()
-	api.Authentication = mw.New(api.MainRouter)
-}
-
-func (api *API) IsValidToken(token string) (map[string]interface{}, error) {
-	payLoadResult, err := api.JWTManager.Decode(token)
-	if err != nil {
-		return payLoadResult, err
-	}
-	return payLoadResult, nil
+	api.Authentication = mw.New(api.MainRouter, api.JWTManager)
 }

@@ -3,18 +3,25 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"todo_app/auth"
 )
 
 type Authentication struct {
-	Handler http.Handler
+	Handler    http.Handler
+	JWTManager *auth.JwtAuth
 }
 type contextKey int
 
 const AuthenticatedUserKey contextKey = 0
 
 var AllowedPathWithToken = []string{
-	"/api/v1/login",
-	"/api/v1/register",
+	"/api/v1/user/login",
+	"/api/v1/user/register",
+}
+
+//Authentication Constructor
+func New(handlerToWrap http.Handler, JWTManager *auth.JwtAuth) *Authentication {
+	return &Authentication{handlerToWrap, JWTManager}
 }
 
 func (a Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +32,7 @@ func (a Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	payLoad, err := IsValidToken(token) //error here
+	payLoad, err := a.JWTManager.Decode(token)
 	if err != nil {
 		http.Error(w, err.Error(), 401)
 		return
@@ -34,9 +41,4 @@ func (a Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	contextWithUser := context.WithValue(r.Context(), AuthenticatedUserKey, payLoad)
 	rWithUser := r.WithContext(contextWithUser)
 	a.Handler.ServeHTTP(w, rWithUser)
-}
-
-//Authentication Constructor
-func New(handlerToWrap http.Handler) *Authentication {
-	return &Authentication{handlerToWrap}
 }
