@@ -2,52 +2,59 @@ package store
 
 import (
 	"fmt"
-	"todo_app/db"
-	"todo_app/types"
+	"todo_app/model"
 )
 
-func GetTodoItems() []types.TodoItem {
-	return db.TodoDB
+type TodoStore interface {
+	GetTodoItems() []model.TodoItem
+	AddTodo(newTodo model.TodoItem)
+	DeleteTodo(id int, userID int)
+	UpdateTodo(id int, userID int, todoToBeUpdate model.TodoItem)
+	GetTodoItemsByUserID(userID int) []model.TodoItem
+	GetTodoItemByID(ID int) model.TodoItem
 }
-func AddTodo(newTodo types.TodoItem) {
-	newTodo.ID = len(db.TodoDB) + 1
-	db.TodoDB = append(db.TodoDB, newTodo)
-	fmt.Println("AFTER ADDED : ", db.TodoDB)
-}
-func DeleteTodo(id int, userID int) {
-	for index, item := range db.TodoDB {
-		if item.ID == int(id) && userID == item.UserID {
-			db.TodoDB = append(db.TodoDB[:index], db.TodoDB[index+1:]...)
-			fmt.Println("AFTER REMOVED : ", db.TodoDB)
-			break
-		}
-	}
-}
-func UpdateTodo(id int, userID int, todoToBeUpdate types.TodoItem) {
-	for index, item := range db.TodoDB {
-		if item.ID == int(id) && item.UserID == userID {
-			db.TodoDB = append(db.TodoDB[:index], db.TodoDB[index+1:]...)
-			todoToBeUpdate.ID = int(id)
-			todoToBeUpdate.UserID = userID
-			db.TodoDB = append(db.TodoDB, todoToBeUpdate)
-			fmt.Println("AFTER UPDATED : ", db.TodoDB)
-			break
-		}
-	}
-}
-func GetTodoItemsByUserID(userID int) []types.TodoItem {
-	var fTodoItems []types.TodoItem
 
-	for _, todo := range db.TodoDB {
+func (db *DBStore) GetTodoItems() []model.TodoItem {
+	return db.todoTbl
+}
+func (db *DBStore) AddTodo(newTodo model.TodoItem) {
+	newTodo.ID = len(db.todoTbl) + 1
+	db.todoTbl = append(db.todoTbl, newTodo)
+	fmt.Println("AFTER ADDED : ", db.todoTbl)
+}
+func (db *DBStore) DeleteTodo(id int, userID int) {
+	for index, item := range db.todoTbl {
+		if item.ID == id && userID == item.UserID {
+			db.todoTbl = append(db.todoTbl[:index], db.todoTbl[index+1:]...)
+			fmt.Println("AFTER REMOVED : ", db.todoTbl)
+			break
+		}
+	}
+}
+func (db *DBStore) UpdateTodo(id int, userID int, todoToBeUpdate model.TodoItem) {
+	for index, item := range db.todoTbl {
+		if item.ID == id && item.UserID == userID {
+			db.todoTbl = append(db.todoTbl[:index], db.todoTbl[index+1:]...)
+			todoToBeUpdate.ID = id
+			todoToBeUpdate.UserID = userID
+			db.todoTbl = append(db.todoTbl, todoToBeUpdate)
+			fmt.Println("AFTER UPDATED : ", db.todoTbl)
+			break
+		}
+	}
+}
+func (db *DBStore) GetTodoItemsByUserID(userID int) []model.TodoItem {
+	var fTodoItems []model.TodoItem
+	for _, todo := range db.todoTbl {
 		if todo.UserID == userID {
 			fTodoItems = append(fTodoItems, todo)
 		}
 	}
 	return fTodoItems
 }
-func GetTodoItemByID(ID int) types.TodoItem {
-	var todoItem types.TodoItem
-	for _, todo := range db.TodoDB {
+func (db *DBStore) GetTodoItemByID(ID int) model.TodoItem {
+	var todoItem model.TodoItem
+	for _, todo := range db.todoTbl {
 		if todo.ID == ID {
 			todoItem = todo
 			break

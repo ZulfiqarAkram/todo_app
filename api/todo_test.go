@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"bytes"
@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 	"testing"
-	"todo_app/types"
+	"todo_app/model"
 )
 
 func TestAddItem(t *testing.T) {
@@ -77,7 +77,7 @@ func TestDisplayItems(t *testing.T) {
 		fmt.Println(err)
 	}
 	assert.Equal(t, err, nil)
-	var myTodo []types.TodoItem
+	var myTodo []model.TodoItem
 	err = json.NewDecoder(res.Body).Decode(&myTodo)
 	if err != nil {
 		fmt.Println(err)
@@ -126,7 +126,7 @@ func TestUpdateItem(t *testing.T) {
 		fmt.Println(err)
 	}
 	assert.Equal(t, err, nil)
-	var myTodo types.TodoItem
+	var myTodo model.TodoItem
 	err = json.NewDecoder(res.Body).Decode(&myTodo)
 	if err != nil {
 		fmt.Println(err)

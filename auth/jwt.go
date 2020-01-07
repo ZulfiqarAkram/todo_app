@@ -4,19 +4,8 @@ import (
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
 	"time"
-	cfg "todo_app/config"
+	"todo_app/setting"
 )
-
-type jwtAuth struct {
-	secret    string
-	expiresIn time.Duration
-}
-
-var JWTManager JWT
-
-func CreateJWTManager() {
-	JWTManager = NewJWTWithConf(cfg.SecretKey, cfg.Duration)
-}
 
 //JWT manages jwt
 type JWT interface {
@@ -24,12 +13,21 @@ type JWT interface {
 	Decode(token string) (payload map[string]interface{}, err error)
 }
 
-//NewJWTWithConf create new jwt manager
-func NewJWTWithConf(secret string, expiry time.Duration) JWT {
-	return &jwtAuth{secret: secret, expiresIn: expiry}
+type JwtAuth struct {
+	secret    string
+	expiresIn time.Duration
 }
 
-func (j *jwtAuth) Sign(payload map[string]interface{}) (string, error) {
+func CreateJWTManager() *JwtAuth {
+	return NewJWTWithConf(setting.SecretKey, setting.Duration)
+}
+
+//NewJWTWithConf create new jwt manager
+func NewJWTWithConf(secret string, expiry time.Duration) *JwtAuth {
+	return &JwtAuth{secret: secret, expiresIn: expiry}
+}
+
+func (j *JwtAuth) Sign(payload map[string]interface{}) (string, error) {
 
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -40,8 +38,7 @@ func (j *jwtAuth) Sign(payload map[string]interface{}) (string, error) {
 	return token.SignedString([]byte(j.secret))
 
 }
-
-func (j *jwtAuth) Decode(token string) (payload map[string]interface{}, err error) {
+func (j *JwtAuth) Decode(token string) (payload map[string]interface{}, err error) {
 
 	t, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
 		// Don't forget to validate the alg is what you expect:

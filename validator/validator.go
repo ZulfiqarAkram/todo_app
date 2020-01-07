@@ -8,16 +8,16 @@ type Validator interface {
 	ValidateStruct(d interface{}) error
 	RegisterCustomValidations()
 }
-type vStruct struct {
+type VStruct struct {
 	v *validator.Validate
 }
 
-func (vStr *vStruct) ValidateStruct(d interface{}) error {
+func (vStr *VStruct) ValidateStruct(d interface{}) error {
 	return vStr.v.Struct(d)
 }
 
-func New() Validator {
-	MyValidator := &vStruct{
+func New() *VStruct {
+	MyValidator := &VStruct{
 		v: validator.New(),
 	}
 	MyValidator.RegisterCustomValidations()
@@ -26,7 +26,7 @@ func New() Validator {
 }
 
 //Custom validation
-func (vStr *vStruct) RegisterCustomValidations() {
+func (vStr *VStruct) RegisterCustomValidations() {
 	_ = vStr.v.RegisterValidation("pwdMinLenSix", func(fl validator.FieldLevel) bool {
 		return len(fl.Field().String()) >= 6
 	})

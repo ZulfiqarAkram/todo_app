@@ -1,32 +1,21 @@
 package main
 
 import (
-	"fmt"
-	"github.com/gorilla/mux"
 	"github.com/urfave/negroni"
 	"log"
 	"net/http"
-	"todo_app/auth"
-	"todo_app/middleware"
-	"todo_app/routes"
-	st "todo_app/store"
+	"todo_app/api"
+	"todo_app/api/middleware"
 )
 
 func main() {
-	fmt.Println("main()")
-	// Register JWT
-	auth.CreateJWTManager()
-
-	//Seed DB
-	st.UploadMockData()
-
-	//Create Routes
-	r := mux.NewRouter()
-	routes.Initialize(r)
+	//Create API and Initialize Routes, DB Store,Validator & JWT
+	r := api.NewAPI()
+	r.Initialize()
 
 	//Middleware
 	n := negroni.New()
-	n.UseHandler(middleware.NewAuthorization(r))
+	n.UseHandler(middleware.NewAuthorization(r.MainRouter))
 
 	log.Fatal(http.ListenAndServe(":8080", n))
 }

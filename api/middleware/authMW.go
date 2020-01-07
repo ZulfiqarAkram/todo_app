@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"todo_app/auth"
 )
@@ -12,8 +11,8 @@ type contextKey int
 const AuthenticatedUserKey contextKey = 0
 
 var AllowedPathWithToken = []string{
-	"/api/login",
-	"/api/register",
+	"/api/v1/login",
+	"/api/v1/register",
 }
 
 type Authorization struct {
@@ -41,7 +40,6 @@ func (l *Authorization) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 //Constructor
 func NewAuthorization(handlerToWrap http.Handler) *Authorization {
-	fmt.Println("Constructor NewAuthorization()")
 	return &Authorization{handlerToWrap}
 }
 

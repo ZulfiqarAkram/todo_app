@@ -1,7 +1,9 @@
-package types
+package model
 
 import (
 	"encoding/json"
+	"net/http"
+	"todo_app/api/middleware"
 )
 
 type User struct {
@@ -10,22 +12,14 @@ type User struct {
 	Password     string `json:"password" validate:"required,pwdMinLenSix"`
 	EmailAddress string `json:"email_address" validate:"required,email"`
 }
-
 type LoginUser struct {
 	Password     string `json:"password" validate:"required,pwdMinLenSix"`
 	EmailAddress string `json:"email_address" validate:"required,email"`
 }
-
 type RegisterUser struct {
 	Username     string `json:"username" validate:"required,min=5,max=15"`
 	Password     string `json:"password" validate:"required,pwdMinLenSix"`
 	EmailAddress string `json:"email_address" validate:"required,email"`
-}
-
-type TodoItem struct {
-	ID     int    `json:"id"`
-	Text   string `json:"text" validate:"required"`
-	UserID int    `json:"user_id"`
 }
 
 func (u *User) ConvertToStruct(payload interface{}) error {
@@ -37,4 +31,13 @@ func (u *User) ConvertToStruct(payload interface{}) error {
 		return err
 	}
 	return nil
+}
+
+func GetUserFromContext(r *http.Request) (User, error) {
+	payload := r.Context().Value(middleware.AuthenticatedUserKey)
+	var usr User
+	if err := usr.ConvertToStruct(payload); err != nil {
+		return usr, err
+	}
+	return usr, nil
 }
