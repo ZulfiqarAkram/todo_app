@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/darahayes/go-boom"
 	"net/http"
 	"todo_app/model"
@@ -23,26 +22,26 @@ func (api *API) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := api.MyValidator.ValidateStruct(loginUser); err != nil {
+	if err := api.ValidatorManager.ValidateStruct(loginUser); err != nil {
 		boom.BadRequest(w, err.Error())
 		return
 	}
 
 	//Is Authentic User
-	usrInDB := api.MyStore.GetUserByEmailAddress(loginUser.EmailAddress)
+	usrInDB := api.Store.GetUserByEmailAddress(loginUser.EmailAddress)
 	if usrInDB.EmailAddress != loginUser.EmailAddress && usrInDB.Password != loginUser.Password {
 		boom.Unathorized(w, "Unauthorized")
 		return
 	}
 
-	userInDB := api.MyStore.GetUserByEmailAndPassword(loginUser.EmailAddress, loginUser.Password)
-	payLoadData := map[string]interface{}{
+	userInDB := api.Store.GetUserByEmailAndPassword(loginUser.EmailAddress, loginUser.Password)
+	payloadData := map[string]interface{}{
 		"id":            userInDB.ID,
 		"username":      userInDB.Username,
 		"password":      userInDB.Password,
 		"email_address": userInDB.EmailAddress,
 	}
-	token, err := api.JWTManager.Sign(payLoadData)
+	token, err := api.JWTManager.Sign(payloadData)
 	if err != nil {
 		boom.Internal(w, err.Error())
 		return
@@ -54,7 +53,6 @@ func (api *API) Login(w http.ResponseWriter, r *http.Request) {
 	}
 }
 func (api *API) Register(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Register() called.")
 	w.Header().Set("Content-Type", "application/json")
 	var newUser model.RegisterUser
 	err := json.NewDecoder(r.Body).Decode(&newUser)
@@ -63,18 +61,18 @@ func (api *API) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := api.MyValidator.ValidateStruct(newUser); err != nil {
+	if err := api.ValidatorManager.ValidateStruct(newUser); err != nil {
 		boom.BadRequest(w, err.Error())
 		return
 	}
 
 	//Is Duplicate User
-	usrInDB := api.MyStore.GetUserByEmailAddress(newUser.EmailAddress)
+	usrInDB := api.Store.GetUserByEmailAddress(newUser.EmailAddress)
 	if usrInDB.ID > 0 {
 		boom.BadRequest(w, "This email already exists in the system.")
 		return
 	}
-	api.MyStore.AddUser(model.User{
+	api.Store.AddUser(model.User{
 		ID:           0,
 		Username:     newUser.Username,
 		Password:     newUser.Password,

@@ -8,14 +8,13 @@ import (
 )
 
 func main() {
-	//Create API and Initialize Routes, DB Store,Validator & JWT
-	r := api.NewAPI()
-	r.Initialize()
+	//Create API and Initialize Routes, DB Store, Validator & JWT
+	a := api.New()
+	a.Initialize()
 
 	//Middleware
 	n := negroni.New()
-	//n.UseHandler(middleware.NewAuthorization(r.MainRouter))
-	n.UseHandler(r.Authentication)
+	n.UseHandler(a.Authentication)
 
 	log.Fatal(http.ListenAndServe(":8080", n))
 }

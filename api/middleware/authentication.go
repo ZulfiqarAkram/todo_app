@@ -14,7 +14,7 @@ type contextKey int
 
 const AuthenticatedUserKey contextKey = 0
 
-var AllowedPathWithToken = []string{
+var allowedPathWithToken = []string{
 	"/api/v1/user/login",
 	"/api/v1/user/register",
 }
@@ -24,21 +24,21 @@ func New(handlerToWrap http.Handler, JWTManager *auth.JwtAuth) *Authentication {
 	return &Authentication{handlerToWrap, JWTManager}
 }
 
-func (a Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (auth Authentication) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	token := r.Header.Get("token")
-	for _, path := range AllowedPathWithToken {
+	for _, path := range allowedPathWithToken {
 		if path == r.URL.Path {
-			a.Handler.ServeHTTP(w, r)
+			auth.Handler.ServeHTTP(w, r)
 			return
 		}
 	}
-	payLoad, err := a.JWTManager.Decode(token)
+	payload, err := auth.JWTManager.Decode(token)
 	if err != nil {
 		http.Error(w, err.Error(), 401)
 		return
 
 	}
-	contextWithUser := context.WithValue(r.Context(), AuthenticatedUserKey, payLoad)
+	contextWithUser := context.WithValue(r.Context(), AuthenticatedUserKey, payload)
 	rWithUser := r.WithContext(contextWithUser)
-	a.Handler.ServeHTTP(w, rWithUser)
+	auth.Handler.ServeHTTP(w, rWithUser)
 }

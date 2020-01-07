@@ -8,7 +8,7 @@ import (
 )
 
 func TestRegister_ShouldAddNewUserIntoDB(t *testing.T) {
-	var RegisterUrl = "http://localhost:8080/api/register"
+	var RegisterUrl = "http://localhost:8080/api/v1/user/register"
 	newUser := []byte(`{
 		"id":"0",
 		"username" : "raja",
@@ -29,7 +29,7 @@ func TestRegister_ShouldAddNewUserIntoDB(t *testing.T) {
 }
 func TestLogin_ShouldGenerateToken(t *testing.T) {
 	//Register
-	var RegisterUrl = "http://localhost:8080/api/register"
+	var RegisterUrl = "http://localhost:8080/api/v1/user/register"
 	newUser := []byte(`{
 		"id":"0",
 		"username" : "hamza",
@@ -49,7 +49,7 @@ func TestLogin_ShouldGenerateToken(t *testing.T) {
 
 	//Login
 	loginCredentials := []byte(`{"email_address":"hamza123@gmail.com","password":"123456"}`)
-	loginUrl := "http://localhost:8080/api/login"
+	loginUrl := "http://localhost:8080/api/v1/user/login"
 	boomRes, err = SendRequest("POST", loginUrl, loginCredentials, headers)
 	if err != nil {
 		fmt.Println(err)
@@ -61,7 +61,7 @@ func TestLogin_ShouldGenerateToken(t *testing.T) {
 }
 func TestLogin_ShouldThrowUnAuthorizeError(t *testing.T) {
 	//Register
-	var RegisterUrl = "http://localhost:8080/api/register"
+	var RegisterUrl = "http://localhost:8080/api/v1/user/register"
 	newUser := []byte(`{
 		"id":"0",
 		"username" : "kamran",
@@ -81,7 +81,7 @@ func TestLogin_ShouldThrowUnAuthorizeError(t *testing.T) {
 
 	//Login
 	loginCredentials := []byte(`{"email_address":"kamran123@gmail.com","password":"1234444"}`)
-	loginUrl := "http://localhost:8080/api/login"
+	loginUrl := "http://localhost:8080/api/v1/user/login"
 	boomRes, err = SendRequest("POST", loginUrl, loginCredentials, headers)
 	if err != nil {
 		fmt.Println(err)

@@ -64,7 +64,7 @@ func TestDisplayItems(t *testing.T) {
 	assert.Equal(t, boomRes.Message, "New todo item has been added.")
 
 	//Display
-	displayItemUrl := "http://localhost:8080/api/todo"
+	displayItemUrl := "http://localhost:8080/api/v1/todo"
 	req, err := http.NewRequest("GET", displayItemUrl, nil)
 	if err != nil {
 		fmt.Println(err)
@@ -112,7 +112,7 @@ func TestUpdateItem(t *testing.T) {
 	assert.Equal(t, boomRes.Message, "New todo item has been added.")
 
 	//Update
-	updateItemUrl := "http://localhost:8080/api/todo/5"
+	updateItemUrl := "http://localhost:8080/api/v1/todo/5"
 	var updateTodoItem = []byte(`{"Text":"Say No"}`)
 	req, err := http.NewRequest("PUT", updateItemUrl, bytes.NewBuffer(updateTodoItem))
 	if err != nil {
@@ -162,7 +162,7 @@ func TestDeleteItem(t *testing.T) {
 	assert.Equal(t, boomRes.Message, "New todo item has been added.")
 
 	//Delete
-	addItemUrl := "http://localhost:8080/api/todo/5"
+	addItemUrl := "http://localhost:8080/api/v1/todo/5"
 	var headersWithToken = map[string]string{
 		"Content-Type": "application/json",
 		"Token":        token,
@@ -177,7 +177,7 @@ func TestDeleteItem(t *testing.T) {
 // Helper functions
 func RegisterUser() (MyBoom, error) {
 	//Register Request.
-	var RegisterUrl = "http://localhost:8080/api/register"
+	var RegisterUrl = "http://localhost:8080/api/v1/user/register"
 	newUser := []byte(`{
 		"id":"0",
 		"username" : "hamza",
@@ -193,7 +193,7 @@ func RegisterUser() (MyBoom, error) {
 }
 func LoginUser() (MyBoom, error) {
 	loginCredentials := []byte(`{"email_address":"hamza123@gmail.com","password":"123456"}`)
-	loginUrl := "http://localhost:8080/api/login"
+	loginUrl := "http://localhost:8080/api/v1/user/login"
 	var headers = map[string]string{
 		"Content-Type": "application/json",
 	}
@@ -203,7 +203,7 @@ func LoginUser() (MyBoom, error) {
 }
 func AddTodo(token string) (MyBoom, error) {
 	var newTodoItem = []byte(`{"Text":"Say Hi"}`)
-	addItemUrl := "http://localhost:8080/api/todo"
+	addItemUrl := "http://localhost:8080/api/v1/todo"
 	var headersWithToken = map[string]string{
 		"Content-Type": "application/json",
 		"Token":        token,

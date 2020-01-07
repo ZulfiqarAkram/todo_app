@@ -12,9 +12,9 @@ import (
 
 func (api *API) InitTodo() {
 	api.Router.Todo.HandleFunc("", api.DisplayItems).Methods(http.MethodGet)
-	api.Router.Todo.HandleFunc("/add", api.AddItem).Methods(http.MethodPost)
-	api.Router.Todo.HandleFunc("/edit/{id}", api.UpdateItem).Methods(http.MethodPut)
-	api.Router.Todo.HandleFunc("/delete/{id}", api.DeleteItem).Methods(http.MethodDelete)
+	api.Router.Todo.HandleFunc("", api.AddItem).Methods(http.MethodPost)
+	api.Router.Todo.HandleFunc("/{id}", api.UpdateItem).Methods(http.MethodPut)
+	api.Router.Todo.HandleFunc("/{id}", api.DeleteItem).Methods(http.MethodDelete)
 }
 
 func (api *API) AddItem(w http.ResponseWriter, r *http.Request) {
@@ -24,7 +24,7 @@ func (api *API) AddItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	if err := api.MyValidator.ValidateStruct(usr); err != nil {
+	if err := api.ValidatorManager.ValidateStruct(usr); err != nil {
 		boom.Internal(w, err.Error())
 		return
 	}
@@ -36,7 +36,7 @@ func (api *API) AddItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	api.MyStore.AddTodo(newTodo)
+	api.Store.AddTodo(newTodo)
 	err = util.JsonResponse(w, 200, "New todo item has been added.")
 	if err != nil {
 		boom.Internal(w, err.Error())
@@ -50,11 +50,11 @@ func (api *API) DisplayItems(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	if err := api.MyValidator.ValidateStruct(usr); err != nil {
+	if err := api.ValidatorManager.ValidateStruct(usr); err != nil {
 		boom.Internal(w, err.Error())
 		return
 	}
-	todoItems := api.MyStore.GetTodoItemsByUserID(usr.ID)
+	todoItems := api.Store.GetTodoItemsByUserID(usr.ID)
 	err = json.NewEncoder(w).Encode(todoItems)
 	if err != nil {
 		boom.Internal(w, err.Error())
@@ -69,7 +69,7 @@ func (api *API) UpdateItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	if err := api.MyValidator.ValidateStruct(usr); err != nil {
+	if err := api.ValidatorManager.ValidateStruct(usr); err != nil {
 		boom.Internal(w, err.Error())
 		return
 	}
@@ -84,8 +84,8 @@ func (api *API) UpdateItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	api.MyStore.UpdateTodo(int(id), usr.ID, todoToBeUpdate)
-	todoItem := api.MyStore.GetTodoItemByID(int(id))
+	api.Store.UpdateTodo(int(id), usr.ID, todoToBeUpdate)
+	todoItem := api.Store.GetTodoItemByID(int(id))
 	err = json.NewEncoder(w).Encode(todoItem)
 	if err != nil {
 		boom.Internal(w, err.Error())
@@ -100,7 +100,7 @@ func (api *API) DeleteItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	if err := api.MyValidator.ValidateStruct(usr); err != nil {
+	if err := api.ValidatorManager.ValidateStruct(usr); err != nil {
 		boom.Internal(w, err.Error())
 		return
 	}
@@ -109,7 +109,7 @@ func (api *API) DeleteItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	api.MyStore.DeleteTodo(int(id), usr.ID)
+	api.Store.DeleteTodo(int(id), usr.ID)
 
 	err = util.JsonResponse(w, 200, "Todo item has been deleted.")
 	if err != nil {
