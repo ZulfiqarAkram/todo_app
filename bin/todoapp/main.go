@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"todo_app/api"
-	"todo_app/api/middleware"
 )
 
 func main() {
@@ -15,7 +14,8 @@ func main() {
 
 	//Middleware
 	n := negroni.New()
-	n.UseHandler(middleware.NewAuthorization(r.MainRouter))
+	//n.UseHandler(middleware.NewAuthorization(r.MainRouter))
+	n.UseHandler(r.Authentication)
 
 	log.Fatal(http.ListenAndServe(":8080", n))
 }
