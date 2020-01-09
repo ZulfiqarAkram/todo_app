@@ -84,9 +84,8 @@ func (api *API) UpdateItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	api.Store.UpdateTodo(int(id), usr.ID, todoToBeUpdate)
-	todoItem := api.Store.GetTodoItemByID(int(id))
-	err = json.NewEncoder(w).Encode(todoItem)
+	todoItemInDB := api.Store.UpdateTodo(uint(id), todoToBeUpdate)
+	err = json.NewEncoder(w).Encode(todoItemInDB)
 	if err != nil {
 		boom.Internal(w, err.Error())
 		return
@@ -109,7 +108,7 @@ func (api *API) DeleteItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	api.Store.DeleteTodo(int(id), usr.ID)
+	api.Store.DeleteTodo(int(id))
 
 	err = util.JsonResponse(w, 200, "Todo item has been deleted.")
 	if err != nil {

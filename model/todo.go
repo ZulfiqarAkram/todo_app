@@ -1,7 +1,10 @@
 package model
 
+import "github.com/jinzhu/gorm"
+
 type TodoItem struct {
-	ID     int    `json:"id"`
+	gorm.Model
 	Text   string `json:"text" validate:"required"`
-	UserID int    `json:"user_id"`
+	UserID uint   `json:"user_id"`
+	User   User   `json:"user_id",gorm:"association_foreignkey:UserID"`
 }

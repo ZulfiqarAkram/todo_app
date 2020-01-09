@@ -11,28 +11,23 @@ type UserStore interface {
 	GetUserByEmailAndPassword(emailAddress string, password string) model.User
 }
 
-func (db *DBStore) GetUserByEmailAddress(emailAddress string) model.User {
+func (Store *DBStore) GetUserByEmailAddress(emailAddress string) model.User {
 	var user model.User
-	for _, usr := range db.userTbl {
-		if usr.EmailAddress == emailAddress {
-			user = usr
-			break
-		}
+	if err := Store.DB.Where("email_address = ?", emailAddress).Find(&user).Error; err != nil {
+		fmt.Println(err.Error())
 	}
 	return user
 }
-func (db *DBStore) AddUser(newUser model.User) {
-	newUser.ID = len(db.userTbl) + 1
-	db.userTbl = append(db.userTbl, newUser)
-	fmt.Println("After New user added: ", db.userTbl)
-}
-func (db *DBStore) GetUserByEmailAndPassword(emailAddress string, password string) model.User {
-	var selUsr model.User
-	for _, usr := range db.userTbl {
-		if usr.EmailAddress == emailAddress && usr.Password == password {
-			selUsr = usr
-			break
-		}
+func (Store *DBStore) AddUser(newUser model.User) {
+	if err := Store.DB.Create(&newUser).Error; err != nil {
+		fmt.Println(err.Error())
 	}
-	return selUsr
+	fmt.Println("After New user added: Done")
+}
+func (Store *DBStore) GetUserByEmailAndPassword(emailAddress string, password string) model.User {
+	var user model.User
+	if err := Store.DB.Where("email_address = ? AND password = ?", emailAddress, password).First(&user).Error; err != nil {
+		fmt.Println(err.Error())
+	}
+	return user
 }

@@ -73,7 +73,6 @@ func (api *API) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	api.Store.AddUser(model.User{
-		ID:           0,
 		Username:     newUser.Username,
 		Password:     newUser.Password,
 		EmailAddress: newUser.EmailAddress,

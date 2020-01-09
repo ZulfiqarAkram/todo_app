@@ -2,12 +2,13 @@ package model
 
 import (
 	"encoding/json"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"todo_app/api/middleware"
 )
 
 type User struct {
-	ID           int    `json:"id" validate:"required"`
+	gorm.Model
 	Username     string `json:"username" validate:"required,min=5,max=15"`
 	Password     string `json:"password" validate:"required,pwdMinLenSix"`
 	EmailAddress string `json:"email_address" validate:"required,email"`
