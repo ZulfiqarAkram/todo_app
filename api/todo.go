@@ -36,7 +36,11 @@ func (api *API) AddItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	api.Store.AddTodo(newTodo)
+	err = api.Store.AddTodo(newTodo)
+	if err != nil {
+		boom.Internal(w, err.Error())
+		return
+	}
 	err = util.JsonResponse(w, 200, "New todo item has been added.")
 	if err != nil {
 		boom.Internal(w, err.Error())
@@ -54,7 +58,11 @@ func (api *API) DisplayItems(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	todoItems := api.Store.GetTodoItemsByUserID(usr.ID)
+	todoItems, err := api.Store.GetTodoItemsByUserID(usr.ID)
+	if err != nil {
+		boom.Internal(w, err.Error())
+		return
+	}
 	err = json.NewEncoder(w).Encode(todoItems)
 	if err != nil {
 		boom.Internal(w, err.Error())
@@ -84,7 +92,11 @@ func (api *API) UpdateItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	todoItemInDB := api.Store.UpdateTodo(uint(id), todoToBeUpdate)
+	todoItemInDB, err := api.Store.UpdateTodo(uint(id), todoToBeUpdate)
+	if err != nil {
+		boom.Internal(w, err.Error())
+		return
+	}
 	err = json.NewEncoder(w).Encode(todoItemInDB)
 	if err != nil {
 		boom.Internal(w, err.Error())
@@ -108,7 +120,11 @@ func (api *API) DeleteItem(w http.ResponseWriter, r *http.Request) {
 		boom.Internal(w, err.Error())
 		return
 	}
-	api.Store.DeleteTodo(int(id))
+	err = api.Store.DeleteTodo(int(id))
+	if err != nil {
+		boom.Internal(w, err.Error())
+		return
+	}
 
 	err = util.JsonResponse(w, 200, "Todo item has been deleted.")
 	if err != nil {

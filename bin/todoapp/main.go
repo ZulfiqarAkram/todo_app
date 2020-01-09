@@ -9,7 +9,11 @@ import (
 
 func main() {
 	//Create API and Initialize Routes, DB Store, Validator & JWT
-	a := api.New()
+	a, err  := api.New()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	a.Initialize()
 
 	//Middleware

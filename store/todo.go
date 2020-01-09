@@ -6,54 +6,55 @@ import (
 )
 
 type TodoStore interface {
-	GetTodoItems() []model.TodoItem
-	AddTodo(newTodo model.TodoItem)
-	DeleteTodo(id int, userID int)
-	UpdateTodo(id int, userID int, todoToBeUpdate model.TodoItem)
-	GetTodoItemsByUserID(userID int) []model.TodoItem
-	GetTodoItemByID(ID int) model.TodoItem
+	GetTodoItems() ([]model.TodoItem, error)
+	AddTodo(newTodo model.TodoItem) error
+	DeleteTodo(id int, userID int) error
+	UpdateTodo(id int, userID int, todoToBeUpdate model.TodoItem) (*model.TodoItem, error)
+	GetTodoItemsByUserID(userID int) ([]model.TodoItem, error)
+	GetTodoItemByID(ID int) (*model.TodoItem, error)
 }
 
-func (Store *DBStore) GetTodoItems() []model.TodoItem {
+func (Store *DBStore) GetTodoItems() ([]model.TodoItem, error) {
 	var todoItems []model.TodoItem
 	if err := Store.DB.Find(&todoItems).Error; err != nil {
-		fmt.Println(err.Error())
+		return nil, err
 	}
-	return todoItems
+	return todoItems, nil
 }
-func (Store *DBStore) AddTodo(newTodo model.TodoItem) {
+func (Store *DBStore) AddTodo(newTodo model.TodoItem) error {
 	if err := Store.DB.Create(&newTodo).Error; err != nil {
-		fmt.Println(err.Error())
+		return err
 	}
 	fmt.Println("AFTER ADDED : Done")
-
+	return nil
 }
-func (Store *DBStore) DeleteTodo(id int) {
+func (Store *DBStore) DeleteTodo(id int) error {
 	var todoItem model.TodoItem
 	if err := Store.DB.Where("id = ?", id).Delete(&todoItem).Error; err != nil {
-		fmt.Println(err.Error())
+		return err
 	}
 	fmt.Println("AFTER REMOVED : Done")
+	return nil
 }
-func (Store *DBStore) UpdateTodo(ID uint, todoToBeUpdate model.TodoItem) model.TodoItem {
-	var todoItem model.TodoItem
+func (Store *DBStore) UpdateTodo(ID uint, todoToBeUpdate model.TodoItem) (*model.TodoItem, error) {
+	todoItem := &model.TodoItem{}
 	if err := Store.DB.Model(&todoItem).Where("id = ?", ID).Update("text", todoToBeUpdate.Text).Error; err != nil {
-		fmt.Println(err.Error())
+		return nil, err
 	}
 	fmt.Println("AFTER UPDATED : Done")
-	return todoItem
+	return todoItem, nil
 }
-func (Store *DBStore) GetTodoItemsByUserID(userID uint) []model.TodoItem {
+func (Store *DBStore) GetTodoItemsByUserID(userID uint) ([]model.TodoItem, error) {
 	var todoItems []model.TodoItem
 	if err := Store.DB.Where("user_id = ?", userID).Find(&todoItems).Error; err != nil {
-		fmt.Println(err.Error())
+		return nil, err
 	}
-	return todoItems
+	return todoItems, nil
 }
-func (Store *DBStore) GetTodoItemByID(ID int) model.TodoItem {
-	var todoItem model.TodoItem
+func (Store *DBStore) GetTodoItemByID(ID int) (*model.TodoItem, error) {
+	todoItem := &model.TodoItem{}
 	if err := Store.DB.First(&todoItem, ID).Error; err != nil {
-		fmt.Println(err.Error())
+		return nil, err
 	}
-	return todoItem
+	return todoItem, nil
 }

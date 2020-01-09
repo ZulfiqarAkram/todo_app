@@ -17,16 +17,25 @@ type API struct {
 	Authentication   *mw.Authentication
 }
 
-func New() *API {
+func New() (*API, error) {
+	newStore, err := store.New()
+	if err != nil {
+		return nil, err
+	}
+	newValidator, err := validator.New()
+	if err != nil {
+		return nil, err
+	}
+
 	api := &API{
+		Store:            newStore,
 		MainRouter:       mux.NewRouter(),
-		Store:            store.New(),
 		JWTManager:       auth.CreateJWTManager(),
 		Router:           &Router{},
-		ValidatorManager: validator.New(),
+		ValidatorManager: newValidator,
 	}
 	api.setupRoutes()
-	return api
+	return api, nil
 }
 
 func (api *API) Initialize() {

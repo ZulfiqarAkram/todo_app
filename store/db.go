@@ -12,17 +12,17 @@ type DBStore struct {
 }
 
 //NewStore constructor
-func New() *DBStore {
+func New() (*DBStore, error) {
 	dbStore := &DBStore{}
-	dbStore.DB = dbStore.getDB()
-	return dbStore
-}
-func (Store *DBStore) getDB() *gorm.DB {
-	db, err := gorm.Open("sqlite3", "todo_app.db")
+	db, err := dbStore.getDB()
 	if err != nil {
-		panic("failed to connect database.")
+		return nil, err
 	}
-	return db
+	dbStore.DB = db
+	return dbStore, nil
+}
+func (Store *DBStore) getDB() (*gorm.DB, error) {
+	return gorm.Open("sqlite3", "todo_app.db")
 }
 func (Store *DBStore) SeedDatabase() {
 	Store.DB.LogMode(true)
