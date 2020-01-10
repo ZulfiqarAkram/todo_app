@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"github.com/darahayes/go-boom"
+	"github.com/jinzhu/gorm"
 	"net/http"
 	"todo_app/model"
 	"todo_app/util"
@@ -76,11 +77,11 @@ func (api *API) Register(w http.ResponseWriter, r *http.Request) {
 
 	//Is Duplicate User
 	usrInDB, err := api.Store.GetUserByEmailAddress(newUser.EmailAddress)
-	if err != nil {
-		boom.Internal(w, err.Error())
+	if !gorm.IsRecordNotFoundError(err) {
+		boom.BadRequest(w, err.Error())
 		return
 	}
-	if usrInDB.ID > 0 {
+	if usrInDB != nil {
 		boom.BadRequest(w, "This email already exists in the system.")
 		return
 	}
