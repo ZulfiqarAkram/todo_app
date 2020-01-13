@@ -1,4 +1,4 @@
-# todo_app_struct
+# todo_app
 Create an todo app app with standard structure, Login with JWT and test as well.
 
 
