@@ -3,8 +3,8 @@ package model
 import (
 	"encoding/json"
 	"github.com/jinzhu/gorm"
+	"github.com/mzulfiqar10p/todo_app/api/middleware"
 	"net/http"
-	"todo_app/api/middleware"
 )
 
 type User struct {

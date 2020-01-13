@@ -4,11 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/mzulfiqar10p/todo_app/model"
 	"gopkg.in/go-playground/assert.v1"
 	"net/http"
 	"strings"
 	"testing"
-	"todo_app/model"
 )
 
 func TestAddItem(t *testing.T) {

@@ -2,8 +2,8 @@ package middleware
 
 import (
 	"context"
+	"github.com/mzulfiqar10p/todo_app/auth"
 	"net/http"
-	"todo_app/auth"
 )
 
 type Authentication struct {

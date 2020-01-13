@@ -2,7 +2,7 @@ package store
 
 import (
 	"fmt"
-	"todo_app/model"
+	"github.com/mzulfiqar10p/todo_app/model"
 )
 
 type UserStore interface {

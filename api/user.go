@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"github.com/darahayes/go-boom"
 	"github.com/jinzhu/gorm"
+	"github.com/mzulfiqar10p/todo_app/model"
+	"github.com/mzulfiqar10p/todo_app/util"
 	"net/http"
-	"todo_app/model"
-	"todo_app/util"
 )
 
 func (api *API) InitUser() {

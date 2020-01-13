@@ -1,15 +1,15 @@
 package main
 
 import (
+	"github.com/mzulfiqar10p/todo_app/api"
 	"github.com/urfave/negroni"
 	"log"
 	"net/http"
-	"todo_app/api"
 )
 
 func main() {
 	//Create API and Initialize Routes, DB Store, Validator & JWT
-	a, err  := api.New()
+	a, err := api.New()
 	if err != nil {
 		log.Fatal(err)
 	}

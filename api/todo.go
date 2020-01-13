@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"github.com/darahayes/go-boom"
 	"github.com/gorilla/mux"
+	"github.com/mzulfiqar10p/todo_app/model"
+	"github.com/mzulfiqar10p/todo_app/util"
 	"net/http"
 	"strconv"
-	"todo_app/model"
-	"todo_app/util"
 )
 
 func (api *API) InitTodo() {

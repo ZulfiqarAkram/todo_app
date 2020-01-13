@@ -2,10 +2,10 @@ package api
 
 import (
 	"github.com/gorilla/mux"
-	mw "todo_app/api/middleware"
-	"todo_app/auth"
-	store "todo_app/store"
-	"todo_app/validator"
+	mw "github.com/mzulfiqar10p/todo_app/api/middleware"
+	"github.com/mzulfiqar10p/todo_app/auth"
+	store "github.com/mzulfiqar10p/todo_app/store"
+	"github.com/mzulfiqar10p/todo_app/validator"
 )
 
 type API struct {

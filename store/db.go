@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"todo_app/model"
+	"github.com/mzulfiqar10p/todo_app/model"
 )
 
 type DBStore struct {

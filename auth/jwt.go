@@ -3,8 +3,8 @@ package auth
 import (
 	"fmt"
 	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/mzulfiqar10p/todo_app/setting"
 	"time"
-	"todo_app/setting"
 )
 
 //JWT manages jwt
