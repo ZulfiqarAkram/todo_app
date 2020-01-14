@@ -1,10 +1,13 @@
 package store
 
 import (
+	"bytes"
 	"fmt"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 	"github.com/mzulfiqar10p/todo_app/model"
+	"os/exec"
 )
 
 type DBStore struct {
@@ -22,7 +25,30 @@ func New() (*DBStore, error) {
 	return dbStore, nil
 }
 func (Store *DBStore) getDB() (*gorm.DB, error) {
-	return gorm.Open("sqlite3", "todo_app.db")
+	//return gorm.Open("sqlite3", "todo_app.db")
+	db, err := gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=todoapp_db1 password=123456")
+	if err != nil {
+		err = createDatabase()
+		if err != nil {
+			return nil, err
+		} else {
+			db, err := gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=todoapp_db1 password=123456")
+			if err != nil {
+				return nil, err
+			}
+			return db, nil
+		}
+	}
+	return db, nil
+}
+func createDatabase() error {
+	cmd := exec.Command("createdb", "-p", "5432", "-h", "127.0.0.1", "-U", "postgres", "-e", "todoapp_db1", "PGPASSWORD=PGPASSWORD")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	if err := cmd.Run(); err != nil {
+		return err
+	}
+	return nil
 }
 func (Store *DBStore) SeedDatabase() {
 	Store.DB.LogMode(true)
